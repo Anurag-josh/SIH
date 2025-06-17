@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+
+    <title>GardenGenius</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f8fcf8] group/design-root overflow-x-hidden" style='font-family: Manrope, "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3e8] px-10 py-3">
+          <div class="flex items-center gap-4 text-[#0e1b0e]">
+            <div class="size-4">
+                <a href="/">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g clip-path="url(#clip0_6_535)">
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z"
+                          fill="currentColor"
+                        ></path>
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_6_535"><rect width="48" height="48" fill="white"></rect></clipPath>
+                      </defs>
+                    </svg>
+                  </a>
+            </div>
+            <h2 class="text-[#0e1b0e] text-lg font-bold leading-tight tracking-[-0.015em]" >GardenGenius</h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-8">
+            <div class="flex items-center gap-9">
+              <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="#">Plants</a>
+              <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="#">Soil</a>
+            </div>
+          </div>
+        </header>
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <p class="text-[#0e1b0e] tracking-light text-[32px] font-bold leading-tight min-w-72">Diagnose your plants</p>
+            </div>
+            <p class="text-[#0e1b0e] text-base font-normal leading-normal pb-3 pt-1 px-4">
+              <%= __('Upload a photo of your plant to identify any problems. We\'ll use image recognition technology to help you diagnose issues.') %>
+            </p>
+            <i><p class="text-[#0e1b0e] text-base font-normal leading-normal pb-3 pt-1 px-4">
+                 <b>Note:</b> Please upload the high quality picture to get accurate results
+            </p></i>
+
+
+            <!-- Image preview container (hidden by default) -->
+            <div id="imagePreviewContainer" class="hidden p-4">
+              <div class="w-full bg-gray-100 aspect-square bg-cover bg-center bg-no-repeat rounded-xl mb-3" id="imagePreview"></div>
+            </div>
+
+            <!-- Results section (shown after submission) -->
+            <% if (locals.explanation) { %>
+              <div class="p-4 mb-6 bg-white rounded-lg shadow-md border border-[#e7f3e8]">
+                <h3 class="text-xl font-bold text-[#0e1b0e] mb-3">Diagnosis Results</h3>
+                <div class="text-[#0e1b0e] whitespace-pre-line"><%= explanation %></div>
+              </div>
+            <% } %>
+
+            <form action="/diagnosis/upload" method="POST" enctype="multipart/form-data" class="px-4 py-3" id="diagnosisForm">
+              <input 
+                type="file" 
+                name="leafImage" 
+                id="imageUpload"
+                required 
+                accept="image/*" 
+                class="mb-3 w-full text-sm text-[#0e1b0e] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#e7f3e8] file:text-[#0e1b0e] hover:file:bg-[#d0e7d1]"
+              />
+              <button type="submit"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-5 flex-1 bg-[#17cf1d] text-[#0e1b0e] text-base font-bold leading-normal tracking-[0.015em]"
+                id="submitBtn">
+                <span class="truncate">Upload image</span>
+              </button>
+            </form>
+            <p class="text-[#4e9750] text-sm font-normal leading-normal pb-3 pt-1 px-4">Max file size: 25mb</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="f-info">
+          <div class="f-info-socials">
+              <i class="fa-brands fa-facebook"></i>
+              <i class="fa-brands fa-instagram"></i>
+              <i class="fa-brands fa-twitter"></i>
+          </div>
+          <div class="f-info-brand"> &copy; Wonderlust Private limited</div>
+          <div class="f-info-link">
+              <a href="/privacy" id="abc">privacy</a>
+              <a href="/terms">terms</a>
+          </div>
+      </div>
+  </footer>
+
+    <script>
+      // Image preview functionality
+      document.getElementById('imageUpload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewElement = document.getElementById('imagePreview');
+            
+            // Show the preview container
+            previewContainer.classList.remove('hidden');
+            
+            // Set the preview image
+            previewElement.style.backgroundImage = `url(${e.target.result})`;
+          };
+          
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Form submission handling
+      document.getElementById('diagnosisForm').addEventListener('submit', function() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="truncate">Processing...</span>';
+      });
+    </script>
+  </body>
+</html>
