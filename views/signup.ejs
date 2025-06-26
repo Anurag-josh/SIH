@@ -1,81 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/registrations/registration-7/assets/css/registration-7.css">
-    <title>signup</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up | GardenGenius</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Epilogue:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900"
+    />
+
+    <!-- TailwindCSS + Font Awesome -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
   </head>
-  <body class="p-10">
-    <form action="/signup" method="post">
-      <section class="bg-light p-3 p-md-4 p-xl-5">
-          <div class="container">
-            <div class="row justify-content-center">
-              <div class="col-12 col-md-9 col-lg-7 col-xl-6 col-xxl-5">
-                <div class="card border border-light-subtle rounded-4">
-                  <div class="card-body p-3 p-md-4 p-xl-5">
-                    <div class="row">
-                      <div class="col-12">
-                        <div class="mb-5">
-                          <h2 class="h4 text-center">Registration</h2>
-                          <h3 class="fs-6 fw-normal text-secondary text-center m-0">Enter your details to register</h3>
-                        </div>
-                      </div>
-                    </div>
-  
-                      <div class="row gy-3 overflow-hidden">
-                        <!-- Username Field -->
-                        <div class="col-12">
-                          <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
-                            <label for="username" class="form-label">Username</label>
-                          </div>
-                        </div>
-                        <!-- Email Field -->
-                        <div class="col-12">
-                          <div class="form-floating mb-3">
-                            <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" required>
-                            <label for="email" class="form-label">Email</label>
-                          </div>
-                        </div>
-                        <!-- Password Field -->
-                        <div class="col-12 position-relative">
-                          <div class="form-floating mb-3">
-                            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
-                            <label for="password" class="form-label">Password</label>
-                            
-                            <!-- Eye Icon -->
-                            <span class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer;" onclick="togglePassword()">
-                              <i class="fa-solid fa-eye" id="toggleIcon"></i>
-                            </span>
-                          </div>
-                        </div>
-                        
-                        
-                        <!-- Submit Button -->
-                        <div class="col-12">
-                          <div class="d-grid">
-                            <button class="btn bsb-btn-xl btn-primary" type="submit">Sign up</button>
-                          </div>
-                        </div>
-                      </div>
-  
-                    <!-- Sign-in Link -->
-                  
-                    <div class="row">
-                      <div class="col-12">
-                        <hr class="mt-5 mb-4 border-secondary-subtle">
-                        <p class="m-0 text-secondary text-center">Already have an account? 
-                          <a href="/login" class="link-primary text-decoration-none">Sign in</a></p>
-                      </div>
-                    </div>
-  
-                  </div>
-                </div>
+
+  <body>
+    <div
+      class="relative flex min-h-screen flex-col bg-[#f8fcf8] overflow-x-hidden"
+      style="font-family: Epilogue, 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between border-b border-[#e7f3e7] px-10 py-3">
+      <div class="flex items-center gap-4 text-[#0e1b0e]">
+        <div class="size-4">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor" />
+          </svg>
+        </div>
+        <h2 class="text-lg font-bold tracking-tight">GardenGenius</h2>
+      </div>
+    </header>
+
+        <!-- Signup Form -->
+        <form action="/signup" method="post">
+          <div class="flex justify-center items-start min-h-[600px] px-4 py-8">
+            <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+              <h2
+                class="text-[#0e1b0e] text-2xl font-bold text-center mb-6"
+              >
+                Sign up for GardenGenius
+              </h2>
+
+              <!-- Username -->
+              <div class="mb-4">
+                <label
+                  for="username"
+                  class="block text-[#0e1b0e] text-base font-medium mb-2"
+                  >Username</label
+                >
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Enter your username"
+                  required
+                  class="w-full rounded-xl border border-[#d0e7d0] bg-[#f8fcf8] p-[15px] h-14 text-[#0e1b0e] placeholder-[#4e974e] text-base focus:outline-none focus:border-[#4e974e]"
+                />
               </div>
+
+              <!-- Email -->
+              <div class="mb-4">
+                <label
+                  for="email"
+                  class="block text-[#0e1b0e] text-base font-medium mb-2"
+                  >Email</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  required
+                  class="w-full rounded-xl border border-[#d0e7d0] bg-[#f8fcf8] p-[15px] h-14 text-[#0e1b0e] placeholder-[#4e974e] text-base focus:outline-none focus:border-[#4e974e]"
+                />
+              </div>
+
+              <!-- Password -->
+              <div class="mb-6 relative">
+                <label
+                  for="password"
+                  class="block text-[#0e1b0e] text-base font-medium mb-2"
+                  >Password</label
+                >
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                  class="w-full pr-12 rounded-xl border border-[#d0e7d0] bg-[#f8fcf8] p-[15px] h-14 text-[#0e1b0e] placeholder-[#4e974e] text-base focus:outline-none focus:border-[#4e974e]"
+                />
+                <span
+                  class="absolute top-1/2 right-4 -translate-y-1/6 text-[#4e974e] cursor-pointer"
+                  onclick="togglePassword()"
+                >
+                  <i class="fa-solid fa-eye-slash" id="toggleIcon"></i>
+                </span>
+              </div>
+
+              <!-- Submit -->
+              <div class="mb-4">
+                <button
+                  type="submit"
+                  class="w-full h-12 bg-[#14b714] text-white font-bold text-sm rounded-xl hover:bg-[#119f11] transition"
+                >
+                  Sign Up
+                </button>
+              </div>
+
+              <!-- Login Link -->
+              <p class="text-center text-sm text-[#4e974e] underline">
+                <a href="/login">Already have an account? Login</a>
+              </p>
             </div>
           </div>
-        </section>
-        
-  </form>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toggle Password Script -->
+    <script>
+      function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const toggleIcon = document.getElementById("toggleIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        } else {
+          passwordInput.type = "password";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        }
+      }
+    </script>
   </body>
 </html>

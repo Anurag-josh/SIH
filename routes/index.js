@@ -5,7 +5,7 @@ const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
 const path = require('path');
-const { isloggedin }=require("../middleware.js");
+const { isloggedin } = require("../middleware.js");
 
 // Configure storage for uploaded files
 const storage = multer.diskStorage({
@@ -33,11 +33,13 @@ const upload = multer({
   }
 }).single('leafImage');
 
+// Render the index page
 router.get('/', (req, res) => {
   res.render('index', { showResults: false });
 });
 
-router.post('/upload',isloggedin,(req, res) => {
+// Handle image upload and prediction
+router.post('/upload', isloggedin, (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
       return res.status(400).render('error', { 
@@ -51,12 +53,17 @@ router.post('/upload',isloggedin,(req, res) => {
       return res.status(400).render('error', { message: 'No file selected' });
     }
 
+    
+    const lang = req.cookies.lang ;
     try {
       const formData = new FormData();
       formData.append('image', fs.createReadStream(req.file.path), {
         filename: req.file.originalname,
         contentType: req.file.mimetype
       });
+
+      formData.append('lang', lang || 'en');
+ // Pass selected language to Flask
 
       const flaskResponse = await axios.post('http://localhost:5001/predict', formData, {
         headers: {
@@ -67,7 +74,7 @@ router.post('/upload',isloggedin,(req, res) => {
         maxBodyLength: 25 * 1024 * 1024
       });
 
-      // Clean up file
+      // Delete uploaded file after use
       fs.unlink(req.file.path, (unlinkErr) => {
         if (unlinkErr) console.error('Error deleting file:', unlinkErr);
       });
@@ -79,7 +86,7 @@ router.post('/upload',isloggedin,(req, res) => {
       });
 
     } catch (error) {
-      // Clean up file if error occurred
+      // Delete file on error
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlink(req.file.path, () => {});
       }

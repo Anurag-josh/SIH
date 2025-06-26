@@ -42,3 +42,6 @@ body {
     text-decoration: underline;
   }
   
+  .truncate:hover{
+   border-radius: 2px solid black;
+  }
