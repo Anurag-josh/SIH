@@ -24,7 +24,7 @@ const upload = multer({
     const filetypes = /jpeg|jpg|png|gif/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
-    
+
     if (mimetype && extname) {
       return cb(null, true);
     } else {
@@ -42,9 +42,9 @@ router.get('/', (req, res) => {
 router.post('/upload', isloggedin, (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
-      return res.status(400).render('error', { 
-        message: err instanceof multer.MulterError 
-          ? 'File too large (max 25MB)' 
+      return res.status(400).render('error', {
+        message: err instanceof multer.MulterError
+          ? 'File too large (max 25MB)'
           : 'Only images are allowed'
       });
     }
@@ -53,8 +53,8 @@ router.post('/upload', isloggedin, (req, res) => {
       return res.status(400).render('error', { message: 'No file selected' });
     }
 
-    
-    const lang = req.cookies.lang ;
+
+    const lang = req.cookies.lang;
     try {
       const formData = new FormData();
       formData.append('image', fs.createReadStream(req.file.path), {
@@ -63,7 +63,7 @@ router.post('/upload', isloggedin, (req, res) => {
       });
 
       formData.append('lang', lang || 'en');
- // Pass selected language to Flask
+      // Pass selected language to Flask
 
       const flaskResponse = await axios.post('http://localhost:5001/predict', formData, {
         headers: {
@@ -75,8 +75,17 @@ router.post('/upload', isloggedin, (req, res) => {
       });
 
       // Delete uploaded file after use
-      fs.unlink(req.file.path, (unlinkErr) => {
-        if (unlinkErr) console.error('Error deleting file:', unlinkErr);
+      // fs.unlink(req.file.path, (unlinkErr) => {
+      //   if (unlinkErr) console.error('Error deleting file:', unlinkErr);
+      // });
+
+      const History = require('../models/historyModel'); // Add at top
+
+      // Save to user history
+      await History.create({
+        user: req.user._id,
+        imageUrl: `uploads/${req.file.filename}`, // Store relative path
+        prediction: flaskResponse.data.explanation
       });
 
       res.render('index', {
@@ -85,10 +94,11 @@ router.post('/upload', isloggedin, (req, res) => {
         originalImage: `/uploads/${req.file.filename}`
       });
 
+
     } catch (error) {
       // Delete file on error
       if (req.file && fs.existsSync(req.file.path)) {
-        fs.unlink(req.file.path, () => {});
+        fs.unlink(req.file.path, () => { });
       }
 
       console.error('Flask API Error:', error.response?.data || error.message);

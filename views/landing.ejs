@@ -37,7 +37,7 @@
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3e8] px-10 py-3">
           <div class="flex items-center gap-4 text-[#0e1b0e]">
-            <div class="size-4">
+            <div class="size-5">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path></svg>
             </div>
             <h2 class="text-[#0e1b0e] text-lg font-bold leading-tight tracking-[-0.015em]" href="/">GardenGenius%></h2>
@@ -93,44 +93,47 @@
               </a>
               <% } %>
             </div>
+
+            <% if (currUser) { %>
             <!-- Hamburger Menu -->
-<div class="relative">
-  <button id="menu-toggle" class="focus:outline-none text-[#0e1b0e] hover:text-green-600">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-  </button>
+           <div class="relative">
+              <button id="menu-toggle" class="focus:outline-none text-[#0e1b0e] hover:text-green-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+             </button>
 
-  <!-- Main Dropdown -->
-  <div id="menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
-    <a href="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account</a>
+             <!-- Main Dropdown -->
+         <div id="menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
+             <a href="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account</a>
 
-    <!-- Settings dropdown -->
-    <div class="relative group">
-      <button id="settings-toggle" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between">
-        Settings
-        <svg class="w-4 h-4 ml-2 text-gray-500 group-hover:text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </button>
+              <!-- Settings dropdown -->
+        <div class="relative group">
+          <button id="settings-toggle" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between">
+            Settings
+            <svg class="w-4 h-4 ml-2 text-gray-500 group-hover:text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
 
-      <!-- Submenu opens downward -->
-      <div id="settings-dropdown" class="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
-        <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700">
-          <span>Layout</span>
-          <!-- Round toggle -->
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="darkModeToggle" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-green-500"></div>
-            <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all peer-checked:translate-x-full"></div>
-          </label>
+          <!-- Submenu opens downward -->
+          <div id="settings-dropdown" class="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
+            <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700">
+              <span>Layout</span>
+              <!-- Round toggle -->
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="darkModeToggle" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-green-500"></div>
+                <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all peer-checked:translate-x-full"></div>
+              </label>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <a href="/history" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
-  </div>
-</div>
+        <a href="/history" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
+         </div>
+     </div>
+     <% } %>
 
 
 
@@ -281,6 +284,19 @@
             </div>
           </div>
         </div>
+
+            <% if (currUser) { %>
+            <div class="fixed bottom-6 right-6 z-50">
+              <a href="/chatbot">
+                  <button class="flex items-center justify-center w-14 h-14 rounded-full bg-[#17cf1d] hover:bg-[#0eab13] text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                       <path d="M216,48H40A16,16,0,0,0,24,64V224a15.84,15.84,0,0,0,9.25,14.5A16.05,16.05,0,0,0,40,240a15.89,15.89,0,0,0,10.25-3.78.69.69,0,0,0,.13-.11L82.5,208H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM40,224h0ZM216,192H82.5a16,16,0,0,0-10.3,3.75l-.12.11L40,224V64H216Z"></path>
+                    </svg>
+                  </button>
+              </a>
+            </div>
+            <% } %>
+
         <footer class="flex justify-center bg-[#E5F4E3]">
           <div class="flex max-w-[60rem] flex-1 flex-col">
             <footer class="flex flex-col gap-[1.5rem] px-[1.25rem] py-[2.5rem] text-center @container">

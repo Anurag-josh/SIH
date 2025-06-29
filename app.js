@@ -16,6 +16,9 @@ const landingRoutes = require('./routes/landing');
 const signupRoute = require('./routes/user');
 const MongoStore = require('connect-mongo');
 const User = require("./models/user.js");
+const historyRoutes = require('./routes/history');
+const chatbotRoutes = require('./routes/chatbot');
+
 
 const i18n = require('i18n');
 const cookieParser = require('cookie-parser');
@@ -87,6 +90,8 @@ app.use(session(sessionOptions));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/uploads', express.static('uploads'));
+
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -112,6 +117,8 @@ app.use('/', landingRoutes);
 app.use('/diagnosis', indexRoutes);
 app.use('/labs', labRoutes);
 app.use('/', signupRoute);
+app.use('/history', historyRoutes);
+app.use('/chatbot', chatbotRoutes);
 
 // --- Error Handlers ---
 app.use((req, res, next) => {

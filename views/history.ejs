@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prediction History</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap" />
+</head>
+
+<body class="bg-gray-100 text-gray-900 font-sans">
+
+    <!-- Navbar -->
+    <div class="flex items-center gap-4 text-[#0e1b0e] px-6 py-4 border-b border-gray-300 bg-white">
+        <a href="/">
+            <div class="w-5 h-5 text-black-600">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+                </svg>
+            </div>
+        </a>
+        <a class="text-[#0e1b0e] text-lg font-bold leading-tight tracking-[-0.015em] hover:underline">
+            GardenGenius
+        </a>
+    </div>
+
+    <!-- Page Content -->
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <div class="w-1/4 bg-white border-r border-gray-200 overflow-y-auto">
+            <h2 class="text-xl font-bold p-4 border-b border-gray-100">Your Predictions</h2>
+            <% if (history.length===0) { %>
+                <p class="p-4 text-gray-500">No history available.</p>
+                <% } else { %>
+                    <% history.forEach((item, index)=> { %>
+                        <button
+                            class="w-full text-left px-4 py-3 hover:bg-green-100 focus:bg-green-200 border-b border-gray-100"
+                            onclick="showPrediction(<%= index %>)">
+                            <span class="font-medium text-sm text-gray-800">
+                                <% const preview=item.prediction.split('.')[0]; const trimmed=preview.length> 50 ?
+                                    preview.substring(0, 50) + '...' : preview; %>
+                                    <%= trimmed %>
+                            </span>
+                        </button>
+                        <% }) %>
+                            <% } %>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8 overflow-y-auto">
+            <% if (history.length===0) { %>
+                <div class="text-center text-gray-500 text-lg mt-10">
+                    Upload an image to start building your history.
+                </div>
+                <% } else { %>
+                    <% history.forEach((item, index)=> { %>
+                        <div id="prediction-<%= index %>" class="hidden">
+                            <div class="mb-6">
+                                <img src="/<%= item.imageUrl %>" alt="Prediction Image"
+                                    class="max-w-md rounded shadow-md" />
+                            </div>
+
+                            <div class="text-xl text-green-700 font-semibold mb-2">Prediction</div>
+                            <p class="text-gray-800 text-base whitespace-pre-line">
+                                <%= item.prediction %>
+                            </p>
+
+                            <div class="text-sm text-gray-500 mt-4 mb-6">Date: <%= new
+                                    Date(item.createdAt).toLocaleString() %>
+                            </div>
+
+                            <!-- Chat Section -->
+                            <div class="mt-6">
+                                <label class="block mb-1 text-sm text-gray-700">Ask a question about this
+                                    prediction:</label>
+                                <textarea id="input-<%= index %>" placeholder="Ask something..." rows="1"
+                                    oninput="expandChat(<%= index %>)"
+                                    class="w-full resize-none p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"></textarea>
+
+                                <!-- Chatbox (initially hidden) -->
+                                <div id="chatbox-wrapper-<%= index %>" class="hidden mt-3">
+                                    <div id="chatbox-<%= index %>"
+                                        class="flex flex-col gap-2 mb-2 p-2 max-h-64 overflow-y-auto bg-white rounded border border-gray-200 shadow-inner">
+                                    </div>
+                                    <button
+                                        onclick="sendMessage(<%= index %>, `<%= item.prediction.replace(/`/g, '\\`') %>`)"
+                                        class="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded">
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <% }) %>
+                            <% } %>
+        </div>
+
+    </div>
+
+    <script>
+        const predictions = document.querySelectorAll('[id^="prediction-"]');
+        
+
+        function showPrediction(index) {
+            predictions.forEach((el, i) => {
+                el.style.display = (i === index) ? 'block' : 'none';
+            });
+        }
+
+        if (predictions.length > 0) {
+            showPrediction(0);
+        }
+
+        function expandChat(index) {
+            const wrapper = document.getElementById(`chatbox-wrapper-${index}`);
+            wrapper.classList.remove("hidden");
+        }
+
+        async function sendMessage(index, predictionText) {
+            const input = document.getElementById(`input-${index}`);
+            const chatbox = document.getElementById(`chatbox-${index}`);
+            const message = input.value.trim();
+            if (!message) return;
+
+            const userMsg = document.createElement('div');
+            userMsg.className = "bg-green-100 text-sm rounded p-2 self-end";
+            userMsg.innerText = message;
+            chatbox.appendChild(userMsg);
+            input.value = '';
+
+            try {
+                const response = await fetch('http://localhost:5001/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: `User is asking about: ${predictionText}. Question: ${message}`
+                    })
+                });
+
+                const data = await response.json();
+                const reply = data.reply || "No reply found.";
+
+                const botMsg = document.createElement('div');
+                botMsg.className = "bg-gray-100 text-sm rounded p-2 self-start";
+                botMsg.innerText = reply;
+                chatbox.appendChild(botMsg);
+            } catch (err) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = "bg-red-100 text-sm rounded p-2 text-red-800 self-start";
+                errorMsg.innerText = "Error: Unable to fetch reply.";
+                chatbox.appendChild(errorMsg);
+            }
+        }
+    </script>
+
+
+</body>
+
+</html>
