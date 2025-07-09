@@ -4,106 +4,375 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>General Chatbot</title>
+  <title>GardenGenius Chatbot</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .fade-enter {
-      opacity: 0;
-      transform: translateY(20px);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .fade-enter-active {
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    .animate-slide-up {
+      animation: slideUp 0.6s ease-out forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .message-enter {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .message-enter-active {
       opacity: 1;
       transform: translateY(0);
-      transition: all 0.5s ease-out;
+      transition: all 0.3s ease-out;
     }
-    .slide-up-enter {
-      opacity: 0;
-      transform: translateY(50px);
+    .typing-indicator {
+      display: inline-block;
     }
-    .slide-up-enter-active {
-      opacity: 1;
-      transform: translateY(0);
-      transition: all 0.5s ease-out 0.3s;
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #4CAF50;
+      margin-right: 4px;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingAnimation {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+    .file-preview {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
+    .language-selector {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
     }
   </style>
 </head>
 
-<body class="bg-gray-100 font-sans text-gray-900 min-h-screen flex flex-col">
+<body class="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
   <!-- Header -->
-  <div class="bg-white px-6 py-4 shadow-md flex items-center gap-3">
-    <a href="/" class="text-black-700 flex items-center gap-2 font-bold text-xl">
+  <header class="bg-white px-6 py-4 shadow-sm flex items-center justify-between sticky top-0 z-10">
+    <a href="/" class="text-green-700 flex items-center gap-2 font-bold text-xl">
       <svg viewBox="0 0 48 48" fill="currentColor" class="w-6 h-6">
         <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" />
       </svg>
-      GardenGenius Chat
+      GardenGenius
     </a>
-  </div>
+    <div class="flex items-center gap-4">
+      <select id="language-select" class="language-selector appearance-none bg-white border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="mr">मराठी</option>
+      </select>
+      <button id="new-chat-btn" class="flex items-center gap-1 text-green-700 hover:text-green-800 text-sm">
+        <i class="fas fa-plus"></i>
+        <span>New Chat</span>
+      </button>
+    </div>
+  </header>
 
   <!-- Welcome screen -->
-  <div id="welcome" class="flex flex-col justify-center items-center text-center flex-grow px-4 transition-all duration-500">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">Welcome to the GardenGenius Chatbot</h1>
-    <p class="text-gray-600 mb-6">Upload a soil report or ask questions about your soil or crops.</p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white p-4 shadow rounded-lg">
+  <div id="welcome" class="flex flex-col justify-center items-center text-center flex-grow px-4 py-8 transition-all duration-500">
+    <div class="max-w-2xl animate-fade">
+      <h1 class="text-3xl font-bold text-gray-800 mb-4">GardenGenius AI Assistant</h1>
+      <p class="text-gray-600 mb-8">Get expert advice on soil health, crop management, and plant diseases in multiple languages.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-full max-w-4xl">
+      <div class="bg-white p-6 shadow rounded-xl hover:shadow-md transition-shadow animate-fade delay-100">
+        <div class="text-green-600 text-2xl mb-3">
+          <i class="fas fa-language"></i>
+        </div>
         <h3 class="text-green-700 font-semibold mb-2">Multilingual Support</h3>
-        <p class="text-sm text-gray-600">Chat in English, Hindi, or Marathi for localized insights.</p>
+        <p class="text-sm text-gray-600">Chat in English, Hindi, or Marathi for localized agricultural insights.</p>
       </div>
-      <div class="bg-white p-4 shadow rounded-lg">
-        <h3 class="text-green-700 font-semibold mb-2">Smart Soil Analysis</h3>
-        <p class="text-sm text-gray-600">Upload soil reports and get meaningful suggestions from AI.</p>
+      <div class="bg-white p-6 shadow rounded-xl hover:shadow-md transition-shadow animate-fade delay-200">
+        <div class="text-green-600 text-2xl mb-3">
+          <i class="fas fa-seedling"></i>
+        </div>
+        <h3 class="text-green-700 font-semibold mb-2">Smart Analysis</h3>
+        <p class="text-sm text-gray-600">Upload soil reports or plant images for AI-powered diagnosis.</p>
       </div>
-      <div class="bg-white p-4 shadow rounded-lg">
-        <h3 class="text-green-700 font-semibold mb-2">Crop & Fertilizer Advice</h3>
-        <p class="text-sm text-gray-600">Receive tailored advice to improve soil fertility and yield.</p>
+      <div class="bg-white p-6 shadow rounded-xl hover:shadow-md transition-shadow animate-fade delay-300">
+        <div class="text-green-600 text-2xl mb-3">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <h3 class="text-green-700 font-semibold mb-2">Expert Advice</h3>
+        <p class="text-sm text-gray-600">Receive tailored recommendations for fertilizers and treatments.</p>
       </div>
     </div>
-    <form id="initial-form" class="w-full max-w-xl">
-      <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.pdf" class="hidden" />
-      <button type="button" onclick="document.getElementById('file-input').click()" class="mb-4 px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600">
-        Upload File
-      </button>
-      <div class="relative">
-        <textarea id="user-input" rows="2" placeholder="Ask your question here..." class="w-full resize-none border rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-300"></textarea>
+    
+    <form id="initial-form" class="w-full max-w-2xl animate-fade delay-400">
+      <div class="relative mb-4">
+        <textarea id="user-input" rows="3" placeholder="Ask about soil nutrients, plant diseases, or crop advice..." 
+          class="w-full resize-none border rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-300"></textarea>
         <button type="submit" class="absolute right-2 bottom-2 text-green-600 hover:text-green-800">
-          <i class="fa-solid fa-paper-plane"></i>
+          <i class="fa-solid fa-paper-plane text-lg"></i>
         </button>
       </div>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.pdf" class="hidden" />
+        <button type="button" onclick="document.getElementById('file-input').click()" 
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 border border-green-200">
+          <i class="fas fa-cloud-upload-alt"></i>
+          Upload File
+        </button>
+        <button type="button" id="sample-questions-btn" 
+          class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+          <i class="fas fa-lightbulb"></i>
+          Sample Questions
+        </button>
+      </div>
+      <div id="file-preview" class="mt-3 hidden"></div>
     </form>
   </div>
 
   <!-- Chat container -->
   <div id="chat-container" class="hidden flex-grow flex flex-col items-center px-4 py-6">
-    <div id="chat-box" class="w-full max-w-4xl flex-1 bg-white rounded-lg shadow-md p-6 space-y-4 overflow-y-auto"></div>
+    <div id="chat-box" class="w-full max-w-4xl flex-1 space-y-6 overflow-y-auto pb-4"></div>
 
-    <!-- Question input area after transition -->
-    <div id="question-input-area" class="w-full max-w-4xl mt-6 slide-up-enter-active">
-      <form id="chat-form" class="flex items-center gap-2">
+    <!-- Question input area -->
+    <div id="question-input-area" class="w-full max-w-4xl mt-4 bg-white rounded-xl shadow-md p-4 animate-slide-up">
+      <form id="chat-form" class="flex flex-col gap-3">
+        <div id="chat-file-preview" class="hidden"></div>
         <div class="relative flex-grow">
-          <textarea id="chat-input" rows="2" placeholder="Ask another question..." class="w-full resize-none border rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-300"></textarea>
-          <button type="submit" class="absolute right-2 bottom-2 text-green-600 hover:text-green-800">
-            <i class="fa-solid fa-paper-plane"></i>
+          <textarea id="chat-input" rows="3" placeholder="Ask another question..." 
+            class="w-full resize-none border rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-green-300"></textarea>
+          <div class="absolute right-2 bottom-2 flex gap-1">
+            <button type="submit" class="text-green-600 hover:text-green-800">
+              <i class="fa-solid fa-paper-plane text-lg"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <input id="chat-file-input" type="file" accept=".jpg,.jpeg,.png,.pdf" class="hidden" />
+          <button type="button" onclick="document.getElementById('chat-file-input').click()" 
+            class="flex items-center gap-2 text-green-700 border border-green-200 hover:bg-green-50 px-4 py-2 rounded-lg">
+            <i class="fas fa-paperclip"></i>
+            Attach File
+          </button>
+          <button type="button" id="quick-questions-btn" 
+            class="flex items-center gap-2 text-gray-700 border border-gray-200 hover:bg-gray-50 px-4 py-2 rounded-lg">
+            <i class="fas fa-bolt"></i>
+            Quick Questions
           </button>
         </div>
-        <input id="chat-file-input" type="file" accept=".jpg,.jpeg,.png,.pdf" class="hidden" />
-        <button type="button" onclick="document.getElementById('chat-file-input').click()" class="flex items-center gap-2 text-green-700 border border-green-300 hover:bg-green-50 px-4 py-2 rounded">
-          <i class="fas fa-paperclip"></i>
-          Attach
-        </button>
       </form>
     </div>
   </div>
 
+  <!-- Sample questions modal -->
+  <div id="sample-questions-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto animate-slide-up">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-gray-800">Sample Questions</h3>
+          <button id="close-sample-modal" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="space-y-3">
+          <button class="sample-question w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm">
+            What's the ideal pH level for growing tomatoes?
+          </button>
+          <button class="sample-question w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm">
+            How to treat yellow spots on my cucumber leaves?
+          </button>
+          <button class="sample-question w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm">
+            Recommend organic fertilizers for my vegetable garden
+          </button>
+          <button class="sample-question w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm">
+            What crops grow best in clay soil?
+          </button>
+          <button class="sample-question w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm">
+            How to improve water retention in sandy soil?
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // DOM elements
     const welcome = document.getElementById('welcome');
     const chatContainer = document.getElementById('chat-container');
+    const chatBox = document.getElementById('chat-box');
     const initialForm = document.getElementById('initial-form');
     const chatForm = document.getElementById('chat-form');
     const userInput = document.getElementById('user-input');
     const chatInput = document.getElementById('chat-input');
     const fileInput = document.getElementById('file-input');
     const chatFileInput = document.getElementById('chat-file-input');
-    const chatBox = document.getElementById('chat-box');
+    const filePreview = document.getElementById('file-preview');
+    const chatFilePreview = document.getElementById('chat-file-preview');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const sampleQuestionsBtn = document.getElementById('sample-questions-btn');
+    const quickQuestionsBtn = document.getElementById('quick-questions-btn');
+    const sampleModal = document.getElementById('sample-questions-modal');
+    const closeSampleModal = document.getElementById('close-sample-modal');
+    const languageSelect = document.getElementById('language-select');
+    const sampleQuestions = document.querySelectorAll('.sample-question');
+
+    // Current state
+    let currentLanguage = 'en';
+    let isBotTyping = false;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set up event listeners
+      setupEventListeners();
+      
+      // Check for saved language preference
+      const savedLanguage = localStorage.getItem('gardenGeniusLanguage');
+      if (savedLanguage) {
+        languageSelect.value = savedLanguage;
+        currentLanguage = savedLanguage;
+      }
+    });
+
+    function setupEventListeners() {
+      // Form submissions
+      initialForm.addEventListener('submit', handleInitialSubmit);
+      chatForm.addEventListener('submit', handleChatSubmit);
+      
+      // File inputs
+      fileInput.addEventListener('change', (e) => handleFileUpload(e, filePreview));
+      chatFileInput.addEventListener('change', (e) => handleFileUpload(e, chatFilePreview));
+      
+      // New chat button
+      newChatBtn.addEventListener('click', startNewChat);
+      
+      // Sample questions
+      sampleQuestionsBtn.addEventListener('click', () => sampleModal.classList.remove('hidden'));
+      quickQuestionsBtn.addEventListener('click', () => sampleModal.classList.remove('hidden'));
+      closeSampleModal.addEventListener('click', () => sampleModal.classList.add('hidden'));
+      sampleQuestions.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const question = e.target.textContent.trim();
+          if (welcome.classList.contains('hidden')) {
+            chatInput.value = question;
+            chatInput.focus();
+          } else {
+            userInput.value = question;
+            userInput.focus();
+          }
+          sampleModal.classList.add('hidden');
+        });
+      });
+      
+      // Language selection
+      languageSelect.addEventListener('change', (e) => {
+        currentLanguage = e.target.value;
+        localStorage.setItem('gardenGeniusLanguage', currentLanguage);
+        // In a real app, you would send this to your backend
+        // to get responses in the selected language
+      });
+    }
+
+    function handleInitialSubmit(e) {
+      e.preventDefault();
+      const prompt = userInput.value.trim();
+      const file = fileInput.files[0];
+      if (!prompt && !file) return;
+      
+      switchToChat();
+      sendMessage(prompt, file);
+      userInput.value = '';
+      fileInput.value = '';
+      filePreview.innerHTML = '';
+      filePreview.classList.add('hidden');
+    }
+
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const prompt = chatInput.value.trim();
+      const file = chatFileInput.files[0];
+      if (!prompt && !file) return;
+      
+      sendMessage(prompt, file);
+      chatInput.value = '';
+      chatFileInput.value = '';
+      chatFilePreview.innerHTML = '';
+      chatFilePreview.classList.add('hidden');
+    }
+
+    function handleFileUpload(event, previewElement) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      previewElement.innerHTML = '';
+      previewElement.classList.remove('hidden');
+      
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewElement.innerHTML = `
+            <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+              <img src="${e.target.result}" alt="Preview" class="file-preview">
+              <div>
+                <p class="text-sm font-medium text-gray-700">${file.name}</p>
+                <p class="text-xs text-gray-500">${(file.size / 1024).toFixed(1)} KB</p>
+              </div>
+              <button type="button" onclick="removeFilePreview(this)" class="ml-auto text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          `;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewElement.innerHTML = `
+          <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-lg">
+            <div class="w-12 h-12 flex items-center justify-center bg-gray-200 rounded-lg">
+              <i class="fas fa-file-alt text-gray-500 text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-700">${file.name}</p>
+              <p class="text-xs text-gray-500">${(file.size / 1024).toFixed(1)} KB</p>
+            </div>
+            <button type="button" onclick="removeFilePreview(this)" class="ml-auto text-gray-500 hover:text-gray-700">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function removeFilePreview(button) {
+      const container = button.closest('div');
+      container.remove();
+      
+      // Clear the file input
+      if (container.parentElement === filePreview) {
+        fileInput.value = '';
+      } else {
+        chatFileInput.value = '';
+      }
+      
+      // Hide preview if no files left
+      if (container.parentElement.children.length === 1) {
+        container.parentElement.classList.add('hidden');
+      }
+    }
 
     function switchToChat() {
       welcome.classList.add('hidden');
@@ -111,60 +380,113 @@
       chatInput.focus();
     }
 
-    function addMessage(text, type) {
-      const div = document.createElement('div');
-      div.className = `flex ${type === 'user' ? 'justify-end' : 'justify-start'}`;
+    function startNewChat() {
+      chatBox.innerHTML = '';
+      welcome.classList.remove('hidden');
+      chatContainer.classList.add('hidden');
+      userInput.focus();
+    }
 
+    function addMessage(text, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `flex ${type === 'user' ? 'justify-end' : 'justify-start'} message-enter`;
+      
       const bubble = document.createElement('div');
-      bubble.className = `max-w-[75%] px-4 py-2 rounded-xl shadow text-sm whitespace-pre-line fade-enter-active ${
-        type === 'user' ? 'bg-green-100 text-gray-800 rounded-br-none' : 'bg-white text-gray-900 rounded-bl-none border'
+      bubble.className = `max-w-[85%] px-4 py-3 rounded-xl text-sm whitespace-pre-line ${
+        type === 'user' 
+          ? 'bg-green-100 text-gray-800 rounded-br-none' 
+          : 'bg-white text-gray-900 rounded-bl-none border shadow-sm'
       }`;
-      bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      div.appendChild(bubble);
-      chatBox.appendChild(div);
+      
+      // Format text with markdown-like syntax
+      const formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+      
+      bubble.innerHTML = formattedText;
+      messageDiv.appendChild(bubble);
+      
+      // Add timestamp
+      const timestamp = document.createElement('div');
+      timestamp.className = `text-xs text-gray-500 mt-1 text-right ${
+        type === 'user' ? 'pr-2' : 'pl-2'
+      }`;
+      timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      messageDiv.appendChild(timestamp);
+      
+      chatBox.appendChild(messageDiv);
+      
+      // Animate the message
+      setTimeout(() => {
+        messageDiv.classList.add('message-enter-active');
+      }, 10);
+      
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    async function sendMessage(prompt, file = null) {
-      if (!prompt && !file) return;
-      addMessage(prompt, 'user');
-
-      const formData = new FormData();
-      formData.append('prompt', prompt);
-      if (file) formData.append('file', file);
-
-      try {
-        const res = await fetch('http://localhost:5001/file-chat', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-        addMessage(data.reply || 'No reply received.', 'bot');
-      } catch (err) {
-        addMessage('Chatbot error: ' + err.message, 'bot');
-      }
+    function showTypingIndicator() {
+      if (isBotTyping) return;
+      
+      isBotTyping = true;
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'flex justify-start';
+      
+      const bubble = document.createElement('div');
+      bubble.className = 'bg-white border shadow-sm rounded-xl rounded-bl-none px-4 py-3';
+      
+      const dots = document.createElement('div');
+      dots.className = 'typing-indicator';
+      dots.innerHTML = `
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      `;
+      
+      bubble.appendChild(dots);
+      typingDiv.appendChild(bubble);
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      
+      return typingDiv;
     }
 
-    initialForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const prompt = userInput.value.trim();
-      const file = fileInput.files[0];
-      if (!prompt && !file) return;
-      switchToChat();
-      sendMessage(prompt, file);
-      userInput.value = '';
-      fileInput.value = '';
+    function hideTypingIndicator(typingElement) {
+      if (!typingElement) return;
+      typingElement.remove();
+      isBotTyping = false;
+    }
+
+    async function sendMessage(prompt, file = null) {
+  if (!prompt && !file) return;
+
+  addMessage(prompt || `[Attached ${file.type.startsWith('image/') ? 'image' : 'file'}]`, 'user');
+  const typingElement = showTypingIndicator();
+
+  try {
+    const formData = new FormData();
+    formData.append('prompt', prompt);
+    formData.append('language', currentLanguage);
+    if (file) formData.append('file', file);
+
+    const res = await fetch('/chatbot/ask', {
+      method: 'POST',
+      body: formData
     });
 
-    chatForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const prompt = chatInput.value.trim();
-      const file = chatFileInput.files[0];
-      if (!prompt && !file) return;
-      sendMessage(prompt, file);
-      chatInput.value = '';
-      chatFileInput.value = '';
-    });
+    const data = await res.json();
+
+    hideTypingIndicator(typingElement);
+    addMessage(data.reply || '❌ No response received.', 'bot');
+  } catch (err) {
+    hideTypingIndicator(typingElement);
+    addMessage(`❌ Error: ${err.message}`, 'bot');
+  }
+}
+
+
+    // Make removeFilePreview available globally
+    window.removeFilePreview = removeFilePreview;
   </script>
 </body>
 </html>

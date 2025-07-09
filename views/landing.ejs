@@ -11,28 +11,39 @@
 
     <title><%= __('welcome') %></title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
-     <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {},
-        },
-      };
-    </script>
-
+     
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <style>
+      select.no-arrow {
+        -webkit-appearance: none; 
+        -moz-appearance: none;    
+        appearance: none;
+        background-image: none !important; 
+      }
+      
+      /* Animation classes */
+      .animate-fadeIn {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      }
+      
+      .animate-fadeIn.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* Delay classes for staggered animations */
+      .delay-100 { transition-delay: 100ms; }
+      .delay-200 { transition-delay: 200ms; }
+      .delay-300 { transition-delay: 300ms; }
+      .delay-400 { transition-delay: 400ms; }
+    </style>
   </head>
   <body>
-    <style>
-        select.no-arrow {
-          -webkit-appearance: none; 
-          -moz-appearance: none;    
-           appearance: none;
-           background-image: none !important; 
-       }
-    </style>
     <div class="relative flex size-full min-h-screen flex-col bg-[#f8fcf8] group/design-root overflow-x-hidden" style='font-family: Manrope, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
         <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3e8] px-10 py-3">
@@ -44,131 +55,117 @@
           </div>
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-4 relative">
-          
-
-        <div class="relative inline-block w-32">
-          <select 
-            onchange="changeLang(this.value)"
-            class="no-arrow block w-full appearance-none rounded border border-gray-400 bg-white px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-green-400"
-            style="padding-right: 1.5rem;"
-           >
-            <option value="en" <%= locale === 'en' ? 'selected' : '' %>>English</option>
-            <option value="hi" <%= locale === 'hi' ? 'selected' : '' %>>हिंदी</option>
-            <option value="mr" <%= locale === 'mr' ? 'selected' : '' %>>मराठी</option>
-         </select>
-
-  <!-- Custom arrow -->
-          <div class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                 <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-         </div>
-        </div>
-
-            <div class="flex items-center gap-9">
-              <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="/diagnosis"><%= __('Plant diseases') %></a>
-              <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="/labs"><%= __('Soil lab') %></a>
-
-            </div>
-            <div class="flex gap-2">
-              <% if (currUser) { %>
-              <a href="/logout">
-                <button
-                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
-                 <span class="truncate"><%= __('Log out') %></span>
-                </button>
-            </a>
-            <% } else { %>
-              <a href="/login">
-                <button
-                 class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
-                 <span class="truncate"><%= __('Log in') %></span>
-                </button>
-            </a>
-              <a href="/signup">
-                <button
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
-                  <span class="truncate"><%= __('Sign up') %></span>
+              <a href="/weather">
+                <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
+                 <span class="truncate">Weather</span>
                 </button>
               </a>
+          
+              <div class="relative inline-block w-32">
+                <select 
+                  onchange="changeLang(this.value)"
+                  class="no-arrow block w-full appearance-none rounded border border-gray-400 bg-white px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-green-400"
+                  style="padding-right: 1.5rem;"
+                >
+                  <option value="en" <%= locale === 'en' ? 'selected' : '' %>>English</option>
+                  <option value="hi" <%= locale === 'hi' ? 'selected' : '' %>>हिंदी</option>
+                  <option value="mr" <%= locale === 'mr' ? 'selected' : '' %>>मराठी</option>
+                </select>
+                <!-- Custom arrow -->
+                <div class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-9">
+                <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="/diagnosis"><%= __('Plant diseases') %></a>
+                <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="/labs"><%= __('Soil lab') %></a>
+              </div>
+              <div class="flex gap-2">
+                <% if (currUser) { %>
+                <a href="/logout">
+                  <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
+                   <span class="truncate"><%= __('Log out') %></span>
+                  </button>
+                </a>
+                <% } else { %>
+                <a href="/login">
+                  <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
+                   <span class="truncate"><%= __('Log in') %></span>
+                  </button>
+                </a>
+                <a href="/signup">
+                  <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
+                    <span class="truncate"><%= __('Sign up') %></span>
+                  </button>
+                </a>
+                <% } %>
+              </div>
+
+              <% if (currUser) { %>
+              <!-- Hamburger Menu -->
+              <div class="relative">
+                <button id="menu-toggle" class="focus:outline-none text-[#0e1b0e] hover:text-green-600">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                <!-- Main Dropdown -->
+                <div id="menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
+                  <a href="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account</a>
+                  <!-- Settings dropdown -->
+                  <div class="relative group">
+                    <button id="settings-toggle" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between">
+                      Settings
+                      <svg class="w-4 h-4 ml-2 text-gray-500 group-hover:text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </button>
+                    <!-- Submenu opens downward -->
+                    <div id="settings-dropdown" class="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
+                      <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700">
+                        <span>Layout</span>
+                        <!-- Round toggle -->
+                        <label class="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" id="darkModeToggle" class="sr-only peer">
+                          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-green-500"></div>
+                          <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all peer-checked:translate-x-full"></div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="/history" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
+                </div>
+              </div>
               <% } %>
             </div>
-
-            <% if (currUser) { %>
-            <!-- Hamburger Menu -->
-           <div class="relative">
-              <button id="menu-toggle" class="focus:outline-none text-[#0e1b0e] hover:text-green-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-             </button>
-
-             <!-- Main Dropdown -->
-         <div id="menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
-             <a href="/account" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Account</a>
-
-              <!-- Settings dropdown -->
-        <div class="relative group">
-          <button id="settings-toggle" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between">
-            Settings
-            <svg class="w-4 h-4 ml-2 text-gray-500 group-hover:text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </button>
-
-          <!-- Submenu opens downward -->
-          <div id="settings-dropdown" class="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
-            <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700">
-              <span>Layout</span>
-              <!-- Round toggle -->
-              <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" id="darkModeToggle" class="sr-only peer">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:bg-green-500"></div>
-                <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-all peer-checked:translate-x-full"></div>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <a href="/history" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
-         </div>
-     </div>
-     <% } %>
-
-
-
           </div>
         </header>
+        
         <div class="px-40 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="@container">
               <div class="@[480px]:p-4">
-                <div
-                  class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-4 pb-10 @[480px]:px-10"
-                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/e720a5f5-12ab-4930-9e77-07b7d7f353a1.png");'
-                >
+                <div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-4 pb-10 @[480px]:px-10"
+                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/e720a5f5-12ab-4930-9e77-07b7d7f353a1.png");'>
                   <div class="flex flex-col gap-2 text-left">
-                    <h1
-                      class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
-                    >
+                    <h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] animate-fadeIn delay-100">
                       <%= __('Instantly diagnose plant diseases') %>
                     </h1>
-                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal animate-fadeIn delay-200">
                       <%= __('Upload a photo of a plant') %>
                     </h2>
                   </div>
-                  <label class="flex flex-col min-w-40 h-14 w-full max-w-[480px] @[480px]:h-16">
+                  <label class="flex flex-col min-w-40 h-14 w-full max-w-[480px] @[480px]:h-16 animate-fadeIn delay-300">
                     <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
-                      <div
-                        class="text-[#4e9750] flex border border-[#d0e7d1] bg-[#f8fcf8] items-center justify-center pl-[15px] rounded-l-xl border-r-0"
+                      <div class="text-[#4e9750] flex border border-[#d0e7d1] bg-[#f8fcf8] items-center justify-center pl-[15px] rounded-l-xl border-r-0"
                         data-icon="MagnifyingGlass"
                         data-size="20px"
-                        data-weight="regular"
-                      >
+                        data-weight="regular">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                          <path
-                            d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                          ></path>
+                          <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Z"></path>
                         </svg>
                       </div>
                       <input
@@ -177,10 +174,8 @@
                         value=""
                       />
                       <div class="flex items-center justify-center rounded-r-xl border-l-0 border border-[#d0e7d1] bg-[#f8fcf8] pr-[7px]">
-                        <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#17cf1d] text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:border-2 border-black hover:bg-white"
-                        >
-                         <a href="/diagnosis"><span class="truncate" ><%= __('Diagnose') %></span></a>
+                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#17cf1d] text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:border-2 border-black hover:bg-white">
+                         <a href="/diagnosis"><span class="truncate"><%= __('Diagnose') %></span></a>
                         </button>
                       </div>
                     </div>
@@ -188,34 +183,27 @@
                 </div>
               </div>
             </div>
+            
             <div class="@container">
               <div class="@[480px]:p-4">
-                <div
-                  class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-4 pb-10 @[480px]:px-10"
-                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/48050649-15bf-46cd-a224-83be3fad81c5.png");'
-                >
+                <div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-4 pb-10 @[480px]:px-10"
+                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/sdxl10/48050649-15bf-46cd-a224-83be3fad81c5.png");'>
                   <div class="flex flex-col gap-2 text-left">
-                    <h1
-                      class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
-                    >
+                    <h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] animate-fadeIn delay-100">
                       <%= __('Find a lab') %>
                     </h1>
-                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal animate-fadeIn delay-200">
                       <%= __('Get your soil tested to find out what nutrients your plants need.') %>
                     </h2>
                   </div>
-                  <label class="flex flex-col min-w-40 h-14 w-full max-w-[480px] @[480px]:h-16">
+                  <label class="flex flex-col min-w-40 h-14 w-full max-w-[480px] @[480px]:h-16 animate-fadeIn delay-300">
                     <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
-                      <div
-                        class="text-[#4e9750] flex border border-[#d0e7d1] bg-[#f8fcf8] items-center justify-center pl-[15px] rounded-l-xl border-r-0"
+                      <div class="text-[#4e9750] flex border border-[#d0e7d1] bg-[#f8fcf8] items-center justify-center pl-[15px] rounded-l-xl border-r-0"
                         data-icon="MagnifyingGlass"
                         data-size="20px"
-                        data-weight="regular"
-                      >
+                        data-weight="regular">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                          <path
-                            d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                          ></path>
+                          <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Z"></path>
                         </svg>
                       </div>
                       <input
@@ -224,9 +212,7 @@
                         value=""
                       />
                       <div class="flex items-center justify-center rounded-r-xl border-l-0 border border-[#d0e7d1] bg-[#f8fcf8] pr-[7px]">
-                        <button
-                          class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#17cf1d] text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:border-2 border-black hover:bg-white"
-                        >
+                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#17cf1d] text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:border-2 border-black hover:bg-white">
                          <a href="/labs"><span class="truncate"><%= __('Find a lab') %></span></a> 
                         </button>
                       </div>
@@ -235,13 +221,12 @@
                 </div>
               </div>
             </div>
-            <h2 class="text-[#0e1b0e] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"><%= __('Why use GardenGenius?') %></h2>
+            
+            <h2 class="text-[#0e1b0e] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5 animate-fadeIn"><%= __('Why use GardenGenius?') %></h2>
             <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col">
-                <div
-                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
-                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/803d18c7-ed03-4b81-8654-1e137a7f8759.png");'
-                ></div>
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col animate-fadeIn delay-100">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
+                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/803d18c7-ed03-4b81-8654-1e137a7f8759.png");'></div>
                 <div class="flex flex-col gap-1">
                   <h2 class="text-[#0e1b0e] text-base font-bold leading-tight"><%= __('Expert advice') %></h2>
                   <p class="text-[#4e9750] text-sm font-normal leading-normal">
@@ -249,21 +234,17 @@
                   </p>
                 </div>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col">
-                <div
-                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
-                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/180c95ef-325d-42b4-91f9-d4031594fb71.png");'
-                ></div>
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col animate-fadeIn delay-200">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
+                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/180c95ef-325d-42b4-91f9-d4031594fb71.png");'></div>
                 <div class="flex flex-col gap-1">
                   <h2 class="text-[#0e1b0e] text-base font-bold leading-tight"><%= __('Accurate results') %></h2>
                   <p class="text-[#4e9750] text-sm font-normal leading-normal"><%= __('Our AI algorithms are trained on thousands of images and can identify diseases with 98% accuracy.') %></p>
                 </div>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col">
-                <div
-                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
-                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/9f017f15-5487-4a41-8c58-aa15f2033b43.png");'
-                ></div>
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col animate-fadeIn delay-300">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
+                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/9f017f15-5487-4a41-8c58-aa15f2033b43.png");'></div>
                 <div class="flex flex-col gap-1">
                   <h2 class="text-[#0e1b0e] text-base font-bold leading-tight"><%= __('Safe and private') %></h2>
                   <p class="text-[#4e9750] text-sm font-normal leading-normal">
@@ -271,11 +252,9 @@
                   </p>
                 </div>
               </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col">
-                <div
-                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
-                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/16a82170-536c-404a-9347-b2aef3047801.png");'
-                ></div>
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d0e7d1] bg-[#f8fcf8] p-4 flex-col animate-fadeIn delay-400">
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-lg w-10 shrink-0"
+                  style='background-image: url("https://cdn.usegalileo.ai/sdxl10/16a82170-536c-404a-9347-b2aef3047801.png");'></div>
                 <div class="flex flex-col gap-1">
                   <h2 class="text-[#0e1b0e] text-base font-bold leading-tight"><%= __('Supporting local businesses') %></h2>
                   <p class="text-[#4e9750] text-sm font-normal leading-normal"><%= __('We partner with local soil testing labs to provide you with the most accurate results.') %></p>
@@ -285,33 +264,32 @@
           </div>
         </div>
 
-            <% if (currUser) { %>
-            <div class="fixed bottom-6 right-6 z-50">
-              <a href="/chatbot">
-                  <button class="flex items-center justify-center w-14 h-14 rounded-full bg-[#17cf1d] hover:bg-[#0eab13] text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                       <path d="M216,48H40A16,16,0,0,0,24,64V224a15.84,15.84,0,0,0,9.25,14.5A16.05,16.05,0,0,0,40,240a15.89,15.89,0,0,0,10.25-3.78.69.69,0,0,0,.13-.11L82.5,208H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM40,224h0ZM216,192H82.5a16,16,0,0,0-10.3,3.75l-.12.11L40,224V64H216Z"></path>
-                    </svg>
-                  </button>
-              </a>
-            </div>
-            <% } %>
+        <% if (currUser) { %>
+        <div class="fixed bottom-6 right-6 z-50">
+          <a href="/chatbot">
+            <button class="flex items-center justify-center w-14 h-14 rounded-full bg-[#17cf1d] hover:bg-[#0eab13] text-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M216,48H40A16,16,0,0,0,24,64V224a15.84,15.84,0,0,0,9.25,14.5A16.05,16.05,0,0,0,40,240a15.89,15.89,0,0,0,10.25-3.78.69.69,0,0,0,.13-.11L82.5,208H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM40,224h0ZM216,192H82.5a16,16,0,0,0-10.3,3.75l-.12.11L40,224V64H216Z"></path>
+              </svg>
+            </button>
+          </a>
+        </div>
+        <% } %>
 
         <footer class="flex justify-center bg-[#E5F4E3]">
           <div class="flex max-w-[60rem] flex-1 flex-col">
             <footer class="flex flex-col gap-[1.5rem] px-[1.25rem] py-[2.5rem] text-center @container">
-              
               <!-- Links Section -->
               <div class="flex flex-wrap items-center justify-center gap-[1.5rem] sm:flex-row sm:justify-around">
-                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('About us') %></a>
-                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('Contact us') %></a>
-                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('FAQ') %></a>
-                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('Privacy policy') %></a>
+                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem] animate-fadeIn delay-100" href="#"><%= __('About us') %></a>
+                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem] animate-fadeIn delay-200" href="#"><%= __('Contact us') %></a>
+                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem] animate-fadeIn delay-300" href="#"><%= __('FAQ') %></a>
+                <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem] animate-fadeIn delay-400" href="#"><%= __('Privacy policy') %></a>
               </div>
 
               <!-- Social Icons Section -->
               <div class="flex flex-wrap justify-center gap-[1rem]">
-                <a href="#">
+                <a href="#" class="animate-fadeIn delay-100">
                   <div class="text-[#5C4033]">
                     <!-- Instagram Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 256 256">
@@ -319,7 +297,7 @@
                     </svg>
                   </div>
                 </a>
-                <a href="#">
+                <a href="#" class="animate-fadeIn delay-200">
                   <div class="text-[#5C4033]">
                     <!-- Twitter Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 256 256">
@@ -327,7 +305,7 @@
                     </svg>
                   </div>
                 </a>
-                <a href="#">
+                <a href="#" class="animate-fadeIn delay-300">
                   <div class="text-[#5C4033]">
                     <!-- Facebook Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.5rem" height="1.5rem" fill="currentColor" viewBox="0 0 256 256">
@@ -338,69 +316,93 @@
               </div>
 
               <!-- Copyright -->
-              <p class="text-[#5C4033] text-[1rem] font-normal leading-normal">@2024 Plant-Based Goodness. All rights reserved.</p>
+              <p class="text-[#5C4033] text-[1rem] font-normal leading-normal animate-fadeIn delay-400">@2024 Plant-Based Goodness. All rights reserved.</p>
             </footer>
           </div>
         </footer>
-
       </div>
     </div>
+    
     <script>
-  // Handle language change via dropdown
-  function changeLang(lang) {
-    document.cookie = "lang=" + lang + "; path=/";
-    window.location.reload();
-  }
-
-
-  document.addEventListener("DOMContentLoaded", function () {
-    const menuToggle = document.getElementById("menu-toggle");
-    const menuDropdown = document.getElementById("menu-dropdown");
-    const settingsToggle = document.getElementById("settings-toggle");
-    const settingsDropdown = document.getElementById("settings-dropdown");
-    const darkModeToggle = document.getElementById("darkModeToggle");
-
-    // Apply stored theme on load
-    if (localStorage.getItem("theme") === "dark") {
-      document.documentElement.classList.add("dark");
-      if (darkModeToggle) darkModeToggle.checked = true;
-    }
-
-    // Toggle dark mode
-    darkModeToggle?.addEventListener("change", function () {
-      if (this.checked) {
-        document.documentElement.classList.add("dark");
-        localStorage.setItem("theme", "dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        localStorage.setItem("theme", "light");
+      // Handle language change via dropdown
+      function changeLang(lang) {
+        document.cookie = "lang=" + lang + "; path=/";
+        window.location.reload();
       }
-    });
 
-    // Toggle main hamburger dropdown
-    menuToggle.addEventListener("click", () => {
-      menuDropdown.classList.toggle("hidden");
-      settingsDropdown.classList.add("hidden"); // close submenu if open
-    });
+      // Intersection Observer for scroll animations
+      function setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // Unobserve after animation to prevent repeating
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1 // Trigger when 10% of element is visible
+        });
 
-    // Toggle settings submenu
-    settingsToggle?.addEventListener("click", (e) => {
-      e.stopPropagation(); // prevent closing the parent menu
-      settingsDropdown.classList.toggle("hidden");
-    });
-
-    // Close dropdowns on outside click
-    document.addEventListener("click", (e) => {
-      if (
-        !menuDropdown.contains(e.target) &&
-        !menuToggle.contains(e.target)
-      ) {
-        menuDropdown.classList.add("hidden");
-        settingsDropdown.classList.add("hidden");
+        // Observe all elements with animate-fadeIn class
+        document.querySelectorAll('.animate-fadeIn').forEach(el => {
+          observer.observe(el);
+        });
       }
-    });
-  });
-</script>
 
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize intersection observer
+        setupIntersectionObserver();
+        
+        // Re-run observer when window is resized (in case layout changes)
+        window.addEventListener('resize', setupIntersectionObserver);
+
+        const menuToggle = document.getElementById("menu-toggle");
+        const menuDropdown = document.getElementById("menu-dropdown");
+        const settingsToggle = document.getElementById("settings-toggle");
+        const settingsDropdown = document.getElementById("settings-dropdown");
+        const darkModeToggle = document.getElementById("darkModeToggle");
+
+        // Apply stored theme on load
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.classList.add("dark");
+          if (darkModeToggle) darkModeToggle.checked = true;
+        }
+
+        // Toggle dark mode
+        darkModeToggle?.addEventListener("change", function () {
+          if (this.checked) {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+          }
+        });
+
+        // Toggle main hamburger dropdown
+        menuToggle.addEventListener("click", () => {
+          menuDropdown.classList.toggle("hidden");
+          settingsDropdown.classList.add("hidden"); // close submenu if open
+        });
+
+        // Toggle settings submenu
+        settingsToggle?.addEventListener("click", (e) => {
+          e.stopPropagation(); // prevent closing the parent menu
+          settingsDropdown.classList.toggle("hidden");
+        });
+
+        // Close dropdowns on outside click
+        document.addEventListener("click", (e) => {
+          if (
+            !menuDropdown.contains(e.target) &&
+            !menuToggle.contains(e.target)
+          ) {
+            menuDropdown.classList.add("hidden");
+            settingsDropdown.classList.add("hidden");
+          }
+        });
+      });
+    </script>
   </body>
 </html>

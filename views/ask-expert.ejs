@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask an Expert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #dcfce7 100%);
+            min-height: 100vh;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #dcfce7 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .expert-card {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #ffffff;
+        }
+
+        .expert-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .expert-card:hover::before {
+            opacity: 1;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+            color: #22c55e;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .floating-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 2px solid #22c55e;
+        }
+
+        .form-input {
+            transition: all 0.3s ease;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            color: #374151;
+        }
+
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            background: #ffffff;
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .login-button {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transition: all 0.3s ease;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(5, 150, 105, 0.4);
+        }
+
+        .chat-button {
+            background: #ffffff;
+            border: 2px solid #22c55e;
+            color: #22c55e;
+            transition: all 0.3s ease;
+        }
+
+        .chat-button:hover {
+            background: #22c55e;
+            color: #ffffff;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .expert-icon-bg {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .status-dot {
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .title-accent {
+            color: #22c55e;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .icon-glow {
+            filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.4));
+        }
+
+        .section-title {
+            color: #15803d;
+        }
+
+        .section-subtitle {
+            color: #374151;
+        }
+
+        .form-container {
+            background: #ffffff;
+            border: 3px solid #22c55e;
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+        }
+
+        .expert-name {
+            color: #ffffff;
+        }
+
+        .expert-role {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .online-status {
+            color: #ffffff;
+        }
+
+        .no-experts-text {
+            color: #374151;
+        }
+
+        .no-experts-subtext {
+            color: #6b7280;
+        }
+
+        .footer-text {
+            color: #6b7280;
+        }
+
+        .header-text {
+            color: #15803d;
+        }
+
+        .header-subtext {
+            color: #374151;
+        }
+
+        .form-label {
+            color: #374151;
+        }
+
+        .main-title {
+            color: #15803d;
+        }
+
+        .main-subtitle {
+            color: #374151;
+        }
+
+        .header-logo {
+            color: #22c55e;
+        }
+
+        .available-experts-icon {
+            color: #22c55e;
+        }
+
+        .become-expert-icon {
+            color: #22c55e;
+        }
+
+        .no-experts-container {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen gradient-bg">
+    <!-- Header -->
+    <header class="glass-effect">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="floating-icon">
+                        <svg class="w-8 h-8 header-logo" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold header-text">Expert Connect</h1>
+                </div>
+                <div class="hidden md:flex items-center space-x-4 header-subtext">
+                    <span class="pulse-animation">●</span>
+                    <span class="text-sm">Live Support Available</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto py-12 px-6">
+        <!-- Title -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-bold main-title mb-4">
+                Get Expert Help <span class="title-accent">Instantly</span>
+            </h2>
+            <p class="text-lg main-subtitle max-w-2xl mx-auto">
+                Connect with verified experts. Get advice and share your problem directly.
+            </p>
+        </div>
+
+        <!-- Available Experts -->
+        <div class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-2xl font-semibold section-title flex items-center">
+                    <svg class="w-6 h-6 mr-2 available-experts-icon" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Available Experts
+                </h3>
+            </div>
+
+            <!-- Dynamic Expert Cards -->
+            <% if (experts && experts.length> 0) { %>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <% experts.forEach(expert=> { %>
+                        <div class="expert-card card-hover rounded-2xl p-6 text-white relative">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="expert-icon-bg w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-lg expert-name">
+                                        <%= expert.name %>
+                                    </h4>
+                                    <p class="expert-role text-sm">Agriculture Expert</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center text-sm online-status">
+                                    <span class="status-dot w-2 h-2 rounded-full mr-2"></span>
+                                    Online
+                                </div>
+                                <a href="/experts/chat?id=<%= expert._id %>"
+                                    class="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 inline-block">
+                                    Chat Now
+                                </a>
+                            </div>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } else { %>
+                    <div class="no-experts-container text-center">
+                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                        </svg>
+                        <p class="no-experts-text text-lg mb-2">No experts available at the moment.</p>
+                        <p class="no-experts-subtext text-sm">Check back soon or register to become an expert!</p>
+                    </div>
+                    <% } %>
+        </div>
+
+        <!-- Expert Registration and Login -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            <!-- Login Section -->
+            <div class="form-container rounded-3xl p-8 md:p-12">
+                <div class="text-center mb-8">
+                    <h3 class="text-3xl font-bold section-title mb-4 flex items-center justify-center">
+                        <svg class="w-8 h-8 mr-3 become-expert-icon" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Expert Login
+                    </h3>
+                    <p class="section-subtitle text-lg max-w-2xl mx-auto">
+                        Already registered? Sign in to your expert account and start helping others.
+                    </p>
+                </div>
+
+                <form action="/experts/login" method="POST" class="max-w-md mx-auto space-y-6">
+                    <div>
+                        <label class="block form-label font-medium mb-2">Email Address</label>
+                        <input type="email" name="email" required placeholder="Enter your email"
+                            class="form-input w-full rounded-xl px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block form-label font-medium mb-2">Access Code</label>
+                        <input type="password" name="code" required placeholder="Enter your access code"
+                            class="form-input w-full rounded-xl px-4 py-3 focus:outline-none">
+                    </div>
+                    <button type="submit"
+                        class="login-button w-full text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl">
+                        <span class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            Login to Account
+                        </span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Registration Section -->
+            <div class="form-container rounded-3xl p-8 md:p-12">
+                <div class="text-center mb-8">
+                    <h3 class="text-3xl font-bold section-title mb-4 flex items-center justify-center">
+                        <svg class="w-8 h-8 mr-3 become-expert-icon" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Become an Expert
+                    </h3>
+                    <p class="section-subtitle text-lg max-w-2xl mx-auto">
+                        Share your knowledge and help others while earning. Join our community of verified experts.
+                    </p>
+                </div>
+
+                <form action="/experts/register" method="POST" class="max-w-md mx-auto space-y-6">
+                    <div>
+                        <label class="block form-label font-medium mb-2">Your Name</label>
+                        <input type="text" name="name" required placeholder="Enter your full name"
+                            class="form-input w-full rounded-xl px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block form-label font-medium mb-2">Email Address</label>
+                        <input type="email" name="email" required placeholder="Enter your email"
+                            class="form-input w-full rounded-xl px-4 py-3 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block form-label font-medium mb-2">Access Code</label>
+                        <input type="password" name="code" required placeholder="Enter your expert access code"
+                            class="form-input w-full rounded-xl px-4 py-3 focus:outline-none">
+                    </div>
+                    <button type="submit"
+                        class="register-button w-full text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl">
+                        <span class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Register as Expert
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-8 footer-text">
+        <p>&copy; 2025 Expert Connect. Connecting knowledge with those who need it.</p>
+    </footer>
+</body>
+
+</html>

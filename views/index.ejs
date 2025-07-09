@@ -1,12 +1,15 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= __('GardenGenius') %></title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
-    href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
-  <title>
-    <%= __('GardenGenius') %>
-  </title>
+    href="https://fonts.googleapis.com/css2?display=swap&family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900" />
   <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
@@ -26,72 +29,100 @@
     }
 
     .animate-fade-in {
-      animation: fade-in 0.4s ease-out;
+      animation: fade-in 0.6s ease-out forwards;
+    }
+
+    .delay-100 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+      animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-400 {
+      animation-delay: 0.4s;
+    }
+
+    .plant-part-card {
+      transition: all 0.3s ease;
+    }
+
+    .plant-part-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .plant-part-card.selected {
+      border-color: #17cf1d;
+      background-color: #e7f3e8;
     }
   </style>
-  <div class="relative flex size-full min-h-screen flex-col bg-[#f8fcf8] group/design-root overflow-x-hidden"
+
+  <div class="relative flex min-h-screen flex-col bg-[#f8fcf8] overflow-x-hidden"
     style='font-family: Manrope, "Noto Sans", sans-serif;'>
-    <div class="layout-container flex h-full grow flex-col">
+    <div class="layout-container flex flex-col h-full">
       <header
-        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3e8] px-10 py-3">
+        class="flex items-center justify-between border-b border-[#e7f3e8] px-10 py-3">
         <div class="flex items-center gap-4 text-[#0e1b0e]">
           <div class="size-4">
             <a href="/">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g clip-path="url(#clip0_6_535)">
-                  <path fill-rule="evenodd" clip-rule="evenodd"
-                    d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z"
-                    fill="currentColor"></path>
-                </g>
-                <defs>
-                  <clipPath id="clip0_6_535">
-                    <rect width="48" height="48" fill="white"></rect>
-                  </clipPath>
-                </defs>
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M47.2426 24L24 47.2426L0.757355 24L24 0.757355L47.2426 24ZM12.2426 21H35.7574L24 9.24264L12.2426 21Z"
+                  fill="currentColor"></path>
               </svg>
             </a>
           </div>
-          <h2 class="text-[#0e1b0e] text-lg font-bold leading-tight tracking-[-0.015em]">
-            <%= __('GardenGenius') %>
-          </h2>
+          <h2 class="text-lg font-bold tracking-tight animate-fade-in"><%= __('GardenGenius') %></h2>
         </div>
-        <div class="flex flex-1 justify-end gap-8">
-          <div class="flex items-center gap-9">
-            <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="#">
-              <%= __('Plants') %>
-            </a>
-            <a class="text-[#0e1b0e] text-sm font-medium leading-normal" href="#">
-              <%= __('Soil') %>
-            </a>
-          </div>
+        <div class="flex flex-1 justify-end gap-9">
+          <a class="text-sm font-medium animate-fade-in delay-100" href="#"><%= __('Plants') %></a>
+          <a class="text-sm font-medium animate-fade-in delay-200" href="#"><%= __('Soil') %></a>
         </div>
       </header>
 
-      <div class="px-40 flex flex-1 justify-center py-5">
-        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-          <div class="flex flex-wrap justify-between gap-3 p-4">
-            <p class="text-[#0e1b0e] tracking-light text-[32px] font-bold leading-tight min-w-72">
-              <%= __('Diagnose your plants') %>
-            </p>
-          </div>
-          <p class="text-[#0e1b0e] text-base font-normal leading-normal pb-3 pt-1 px-4">
-            <%= __('Upload a photo of your plant to identify any problems. We will use image recognition technology to help you diagnose issues.') %>
-          </p>
-          <i>
-            <p class="text-[#0e1b0e] text-base font-normal leading-normal pb-3 pt-1 px-4">
-              <b>
-                <%= __('Note:') %>
-              </b>
-              <%= __('Please upload the high quality picture to get accurate results') %>
-            </p>
-          </i>
+      <div class="px-40 py-5 flex-1 flex justify-center">
+        <div class="flex flex-col max-w-[960px] w-full">
 
-          <div id="imagePreviewContainer" class="hidden p-4">
-            <img id="imagePreview" alt="Uploaded preview"
-              class="w-full max-w-md rounded-xl shadow-md object-contain border border-[#d0e7d1] mx-auto" />
+          <!-- Hero Section -->
+          <div class="flex flex-col md:flex-row items-center gap-8 mb-8 p-4">
+            <div class="flex-1 animate-fade-in">
+              <h1 class="text-[32px] font-bold mb-4"><%= __('Diagnose your plants') %></h1>
+              <p class="mb-4">
+                <%= __('Upload a photo of your plant to identify any problems. We will use image recognition technology to help you diagnose issues.') %>
+              </p>
+              <div class="bg-[#e7f3e8] p-4 rounded-lg animate-fade-in delay-200">
+                <p>
+                  <b class="text-[#17cf1d]"><%= __('Pro Tip:') %></b>
+                  <%= __('For best results, take photos in natural light against a plain background.') %>
+                </p>
+              </div>
+            </div>
           </div>
 
+          <!-- Image Preview -->
+          <div id="imagePreviewContainer" class="hidden p-4 animate-fade-in">
+            <div class="relative max-w-md mx-auto">
+              <img id="imagePreview" alt="Uploaded preview"
+                class="w-full rounded-xl shadow-md object-contain border border-[#d0e7d1]" />
+              <div class="absolute top-2 right-2 bg-white/80 rounded-full p-1">
+                <button id="removeImageBtn" class="text-red-500 hover:text-red-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
 
+          <!-- Diagnosis Results -->
           <% if (locals.explanation) { %>
             <div class="p-6 mb-8 bg-[#f8fcf8] border border-[#d0e7d1] rounded-xl shadow-md animate-fade-in">
               <div class="flex items-center mb-4">
@@ -99,60 +130,123 @@
                   viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
-                <h3 class="text-2xl font-bold text-[#0e1b0e] tracking-tight">
-                  <%= __('Diagnosis Results') %>
-                </h3>
+                <h3 class="text-2xl font-bold"><%= __('Diagnosis Results') %></h3>
               </div>
-              <div
-                class="bg-white border border-[#e7f3e8] rounded-lg p-4 text-[#0e1b0e] text-base leading-relaxed whitespace-pre-line">
+              <div class="bg-white border border-[#e7f3e8] rounded-lg p-4 whitespace-pre-line">
                 <%= explanation %>
               </div>
             </div>
-            <% } %>
+          <% } %>
 
-              <form action="/diagnosis/upload" method="POST" enctype="multipart/form-data" class="px-4 py-3"
-                id="diagnosisForm">
-                <input type="file" name="leafImage" id="imageUpload" required accept="image/*"
-                  class="mb-3 w-full text-sm text-[#0e1b0e] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#e7f3e8] file:text-[#0e1b0e] hover:file:bg-[#d0e7d1]" />
-                <button type="submit"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-5 flex-1 bg-[#17cf1d] text-[#0e1b0e] text-base font-bold leading-normal tracking-[0.015em]"
-                  id="submitBtn">
-                  <span class="truncate">
-                    <%= __('Upload image') %>
-                  </span>
-                </button>
-              </form>
+         <!-- Plant Part Selection -->
+<div class="p-4 mb-6 animate-fade-in delay-200">
+  <h3 class="text-xl font-bold mb-4"><%= __('Which part of the plant is affected?') %></h3>
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <!-- Shared card template -->
+    <% const plantParts = [
+      { key: 'leaf', label: __('Leaf'), img: 'https://cdn.britannica.com/58/188958-050-6290B2F8/leaf-insect-phyllium-giganteum-Malaysia.jpg?w=1000' },
+      { key: 'stem', label: __('Stem'), img: 'https://cdn.britannica.com/27/157927-050-0B063D3D/stem-vine.jpg?w=400&h=225&c=crop' },
+      { key: 'root', label: __('Root'), img: 'https://cdn.morningchores.com/wp-content/uploads/2019/03/Plant-Roots-101-Going-Back-to-Our-Roots-in-the-Garden-FI.jpg' },
+      { key: 'flower', label: __('Flower'), img: 'https://images.unsplash.com/photo-1695897706183-5295269554b9?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGFpc3klMjBmbG93ZXJ8ZW58MHx8MHx8fDA%3D' },
+      { key: 'fruit', label: __('Fruit'), img: 'https://images.immediate.co.uk/production/volatile/sites/30/2019/06/kiwi-aedbdbf.jpg' },
+    ]; %>
 
-              <p class="text-[#4e9750] text-sm font-normal leading-normal pb-3 pt-1 px-4">
-                <%= __('Max file size: 25mb') %>
-              </p>
+    <% plantParts.forEach(part => { %>
+      <div class="plant-part-card border border-[#d0e7d1] rounded-lg cursor-pointer overflow-hidden"
+        onclick="selectPlantPart('<%= part.key %>')">
+        <div class="aspect-square w-full h-full overflow-hidden">
+          <img src="<%= part.img %>" alt="<%= part.label %>" class="w-full h-full object-cover" />
+        </div>
+        <div class="p-2 text-center">
+          <p class="font-medium text-[#0e1b0e]"><%= part.label %></p>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+  <input type="hidden" name="plantPart" id="plantPartInput" value="">
+</div>
+
+
+          <!-- Upload Form -->
+          <form action="/diagnosis/upload" method="POST" enctype="multipart/form-data" class="px-4" id="diagnosisForm">
+            <div class="mb-6 animate-fade-in delay-300">
+              <label class="block text-sm font-medium mb-2" for="imageUpload">
+                <%= __('Upload plant image') %>
+              </label>
+              <label for="imageUpload"
+                class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-[#f8fcf8] hover:bg-[#e7f3e8]">
+                <div class="flex flex-col items-center pt-5 pb-6">
+                  <svg class="w-8 h-8 mb-4 text-[#4e9750]" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 20 16">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                  </svg>
+                  <p class="mb-2 text-sm"><span class="font-semibold"><%= __('Click to upload') %></span> <%= __('or drag and drop') %></p>
+                  <p class="text-xs text-[#4e9750]"><%= __('SVG, PNG, JPG or GIF (MAX. 25MB)') %></p>
+                </div>
+                <input id="imageUpload" name="leafImage" type="file" class="hidden" required accept="image/*" />
+              </label>
+            </div>
+
+            <button type="submit"
+              class="w-full h-12 px-5 rounded-full bg-[#17cf1d] hover:bg-[#0eab13] text-base font-bold transition-colors duration-200 animate-fade-in delay-400"
+              id="submitBtn">
+              <span class="truncate"><%= __('Analyze Plant Health') %></span>
+            </button>
+          </form>
+
+          <p class="text-sm text-[#4e9750] mt-2 px-4 animate-fade-in delay-400">
+            <%= __('Our AI analyzes thousands of plant images to provide accurate diagnosis') %>
+          </p>
         </div>
       </div>
     </div>
   </div>
 
-
   <script>
-  document.getElementById('imageUpload').addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const previewContainer = document.getElementById('imagePreviewContainer');
-        const previewElement = document.getElementById('imagePreview');
-        previewContainer.classList.remove('hidden');
-        previewElement.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  });
+    document.getElementById('imageUpload').addEventListener('change', function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const previewContainer = document.getElementById('imagePreviewContainer');
+          const previewElement = document.getElementById('imagePreview');
+          previewContainer.classList.remove('hidden');
+          previewElement.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
-  document.getElementById('diagnosisForm').addEventListener('submit', function () {
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="truncate"><%= __("Processing...") %></span>';
-  });
-</script>
+    document.getElementById('removeImageBtn')?.addEventListener('click', function () {
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('imagePreviewContainer').classList.add('hidden');
+    });
+
+    function selectPlantPart(part) {
+      document.querySelectorAll('.plant-part-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      event.currentTarget.classList.add('selected');
+      document.getElementById('plantPartInput').value = part;
+    }
+
+    document.getElementById('diagnosisForm').addEventListener('submit', function () {
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <span class="truncate flex items-center justify-center">
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <%= __("Processing...") %>
+        </span>
+      `;
+    });
+  </script>
 </body>
 
 </html>

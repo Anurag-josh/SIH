@@ -18,6 +18,23 @@ const MongoStore = require('connect-mongo');
 const User = require("./models/user.js");
 const historyRoutes = require('./routes/history');
 const chatbotRoutes = require('./routes/chatbot');
+const weatherRoutes = require('./routes/weather');
+const marketplaceRoutes = require('./routes/marketplace.js');
+const expertRoutes = require('./routes/experts.js');
+
+
+
+//-----------------------
+const http = require('http');
+const { Server } = require('socket.io');
+
+const server = http.createServer(app);
+const io = new Server(server);
+//-------spcket-------------
+
+
+
+
 
 
 const i18n = require('i18n');
@@ -82,6 +99,45 @@ app.use((req, res, next) => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+
+//----socket.io setup---
+io.on('connection', (socket) => {
+  console.log('🔌 New socket connected:', socket.id);
+
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on('chatMessage', ({ roomId, message, senderId }) => {
+    io.to(roomId).emit('chatMessage', { message, senderId });
+  });
+
+  socket.on("endChat", (roomId) => {
+  if (activeRooms.has(roomId)) {
+    activeRooms.delete(roomId);
+
+    // ✅ Broadcast to everyone in the room (user + expert)
+    io.to(roomId).emit("chatEnded");
+
+    // Remove everyone from room
+    const clients = io.sockets.adapter.rooms.get(roomId);
+    if (clients) {
+      clients.forEach(socketId => {
+        io.sockets.sockets.get(socketId)?.leave(roomId);
+      });
+    }
+
+    console.log(`Room ${roomId} ended by creator`);
+  }
+});
+
+  socket.on('disconnect', () => {
+    console.log('🔌 Socket disconnected:', socket.id);
+  });
+});
+
+
 // --- Middleware ---
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
@@ -119,6 +175,13 @@ app.use('/labs', labRoutes);
 app.use('/', signupRoute);
 app.use('/history', historyRoutes);
 app.use('/chatbot', chatbotRoutes);
+app.use('/weather', weatherRoutes);
+app.use('/marketplace', marketplaceRoutes);
+app.use('/experts', expertRoutes);
+
+
+
+
 
 // --- Error Handlers ---
 app.use((req, res, next) => {
@@ -132,4 +195,5 @@ app.use((err, req, res, next) => {
 
 // --- Server ---
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`✅ Server + Socket.IO running on port ${PORT}`));
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Forecast</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body class="bg-[#f8fcf8] min-h-screen text-[#0e1b0e] font-[Manrope,sans-serif] flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-[#e7f3e8] shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-[#0e1b0e]">Weather Assistant</h1>
+    <a href="/" class="text-sm text-green-600 hover:underline">Back to Home</a>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-grow max-w-3xl mx-auto py-10 px-6">
+    <form id="weather-form" method="POST" action="/weather" class="mb-6">
+      <label for="city" class="block text-lg font-semibold mb-2 text-[#0e1b0e]">Enter your city in Maharashtra:</label>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input type="text" name="city" id="city" required placeholder="e.g., Pune, Nagpur, Nashik"
+          class="flex-1 px-4 py-2 border border-[#d0e7d1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#17cf1d] bg-white placeholder:text-[#4e9750]">
+        <select name="crop" id="crop"
+          class="px-4 py-2 border border-[#d0e7d1] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#17cf1d] bg-white text-[#0e1b0e]">
+          <option value="">Select Crop (Optional)</option>
+          <option value="tomato">Tomato</option>
+          <option value="onion">Onion</option>
+          <option value="maize">Maize</option>
+          <option value="corn">Corn</option>
+          <option value="sugarcane">Sugarcane</option>
+        </select>
+        <button type="submit"
+          class="bg-[#17cf1d] text-[#0e1b0e] px-4 py-2 rounded-lg hover:bg-white hover:border-2 border-black font-semibold">
+          <i class="fas fa-search mr-1"></i>Check
+        </button>
+      </div>
+    </form>
+
+    <% if (forecast) { %>
+      <div class="mt-8 bg-[#e5f4e3] border border-[#c4eac3] p-6 rounded-lg shadow">
+        <h3 class="text-lg font-bold text-[#0e1b0e] mb-4">📅 3-Day Forecast</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <% forecast.forEach(day => { %>
+            <div class="bg-white p-4 rounded shadow text-sm space-y-2 border border-[#d0e7d1]">
+              <p class="font-semibold text-[#4e9750]"><%= day.date %></p>
+              <p><i class="fas fa-cloud mr-1"></i><%= day.condition %></p>
+              <p>🌡️ Avg Temp: <%= day.avgTemp %> °C</p>
+              <p>🌧️ Rain: <%= day.rain %> mm</p>
+              <p>💧 Humidity: <%= day.humidity %>%</p>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (sowingAdvice) { %>
+      <div class="mt-6 p-4 bg-[#dff8e0] border border-[#b3e5b5] rounded shadow">
+        <h3 class="text-[#0e1b0e] font-bold mb-2">🌱 Sowing Advice:</h3>
+        <p><%= sowingAdvice %></p>
+      </div>
+    <% } %>
+
+    <% if (error) { %>
+      <div class="mt-6 p-4 bg-red-100 text-red-700 rounded shadow">
+        <i class="fas fa-exclamation-circle mr-1"></i> <%= error %>
+      </div>
+    <% } %>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#E5F4E3]">
+    <div class="flex max-w-[60rem] flex-col items-center mx-auto px-[1.25 rem] py-[4 rem] text-center">
+      
+      <!-- Links -->
+      <div class="flex flex-wrap items-center justify-center gap-[1.5rem] sm:justify-around mb-4">
+        <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('About us') %></a>
+        <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('Contact us') %></a>
+        <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('FAQ') %></a>
+        <a class="text-[#5C4033] text-[1rem] font-normal leading-normal min-w-[10rem]" href="#"><%= __('Privacy policy') %></a>
+      </div>
+
+      <!-- Social Icons -->
+      <div class="flex flex-wrap justify-center gap-[1rem] mb-4">
+        <a href="#"><div class="text-[#5C4033]"><i class="fab fa-instagram text-xl"></i></div></a>
+        <a href="#"><div class="text-[#5C4033]"><i class="fab fa-twitter text-xl"></i></div></a>
+        <a href="#"><div class="text-[#5C4033]"><i class="fab fa-facebook text-xl"></i></div></a>
+      </div>
+
+      <!-- Copyright -->
+      <p class="text-[#5C4033] text-[1rem] font-normal leading-normal">@2024 Plant-Based Goodness. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>
