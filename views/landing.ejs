@@ -57,7 +57,7 @@
             <div class="flex items-center gap-4 relative">
               <a href="/weather">
                 <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-[#17cf1d] hover:bg-white text-[#0e1b0e] text-sm font-bold leading-normal tracking-[0.015em] transition-colors duration-200 hover:border-2 border-black">
-                 <span class="truncate">Weather</span>
+                 <span class="truncate"><%= __('Weather') %></span>
                 </button>
               </a>
           
@@ -70,6 +70,7 @@
                   <option value="en" <%= locale === 'en' ? 'selected' : '' %>>English</option>
                   <option value="hi" <%= locale === 'hi' ? 'selected' : '' %>>हिंदी</option>
                   <option value="mr" <%= locale === 'mr' ? 'selected' : '' %>>मराठी</option>
+                  <option value="ml" <%= locale === 'ml' ? 'selected' : '' %>>മലയാളം</option>
                 </select>
                 <!-- Custom arrow -->
                 <div class="pointer-events-none absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -207,7 +208,7 @@
                         </svg>
                       </div>
                       <input
-                        placeholder="Enter your address"
+                        placeholder="<%= __('Enter your address') %>"
                         class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0e1b0e] focus:outline-0 focus:ring-0 border border-[#d0e7d1] bg-[#f8fcf8] focus:border-[#d0e7d1] h-full placeholder:text-[#4e9750] px-[15px] rounded-r-none border-r-0 pr-2 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal"
                         value=""
                       />

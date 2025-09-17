@@ -36,6 +36,7 @@ const upload = multer({
 // Render the index page
 router.get('/', (req, res) => {
   res.render('index', { showResults: false });
+
 });
 
 // Handle image upload and prediction

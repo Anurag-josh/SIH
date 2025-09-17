@@ -371,16 +371,19 @@
                     if (!message) return;
 
                     socket.emit("chatMessage", {
-                        roomId: "<%= expert._id %>",
+                        roomId: "<%= roomId %>",
                         message,
-                        senderId: mySocketId
+                        senderId: "<%= currentSender %>",
+                        receiverId: "<%= expert._id %>",
+                        senderType: currentUserType,
+                        senderName: "<%= currUser.name %>"
                     });
 
-                    // appendMessage(true, message); // true => self
                     input.value = "";
                     autoResize(input);
                     hideTypingIndicator();
                 });
+
 
 
 

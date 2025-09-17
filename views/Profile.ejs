@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agri Cultur Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#F0F2F5] h-screen overflow-hidden">
+    <div id="app-wrapper" class="flex h-full">
+        <!-- Left Sidebar -->
+        <aside id="left-sidebar" class="sidebar w-64 bg-[#1E1E1E] text-white p-4 flex flex-col flex-shrink-0 transition-all duration-300">
+            <!-- Left sidebar content will be injected by JS -->
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <main class="flex-1 p-6 lg:p-8 bg-white lg:rounded-l-2xl overflow-y-auto">
+                <header class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-4">
+                        <button id="menu-toggle-btn" class="p-2 rounded-full hover:bg-gray-100">
+                            <span class="material-icons text-gray-600">menu</span>
+                        </button>
+                        <div class="relative hidden sm:block">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                            <input class="w-full bg-gray-100 rounded-lg pl-10 pr-4 py-2" placeholder="Search..." type="text"/>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <img id="user-avatar" alt="User avatar" class="w-10 h-10 rounded-full" src="https://placehold.co/40x40" />
+                        <button id="profile-toggle-btn" class="p-2 rounded-full hover:bg-gray-100">
+                            <span class="material-icons text-gray-600">apps</span>
+                        </button>
+                    </div>
+                </header>
+                <div id="dashboard-content">
+                     <p class="text-center text-gray-500">Loading dashboard...</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside id="right-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300">
+        <!-- Right sidebar content will be injected by JS -->
+    </aside>
+    
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden"></div>
+
+    <script src="/routes/Profile.js"></script>
+</body>
+</html>

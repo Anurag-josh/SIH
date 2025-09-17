@@ -14,14 +14,16 @@ router.get('/', (req, res) => {
   res.render('chatbot');
 });
 
-// Send message and optional file
 router.post('/ask', upload.single('file'), async (req, res) => {
   try {
     const userMessage = req.body.prompt;
     const file = req.file;
-
+    const userLanguage = req.body.language ;  
+    console.log('User language:', userLanguage);
+    
     const formData = new FormData();
     formData.append('prompt', userMessage);
+    formData.append('language', userLanguage);
 
     if (file) {
       const ext = path.extname(file.originalname).toLowerCase();

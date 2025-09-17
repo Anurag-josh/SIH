@@ -15,13 +15,15 @@ const labRoutes = require('./routes/labs');
 const landingRoutes = require('./routes/landing');
 const signupRoute = require('./routes/user');
 const MongoStore = require('connect-mongo');
-const User = require("./models/user.js");
+const User = require("./models/user.js"); 
 const historyRoutes = require('./routes/history');
 const chatbotRoutes = require('./routes/chatbot');
 const weatherRoutes = require('./routes/weather');
 const marketplaceRoutes = require('./routes/marketplace.js');
 const expertRoutes = require('./routes/experts.js');
-
+const Message = require('./models/message');
+const onboarding = require('./routes/onboarding.js');
+const socketUserMap = new Map();
 
 
 //-----------------------
@@ -74,7 +76,7 @@ const sessionOptions = {
 app.use(cookieParser()); // ✅ must come before i18n.init
 
 i18n.configure({
-  locales: ['en', 'hi', 'mr'],
+  locales: ['en', 'hi', 'mr', 'ml'],
   directory: path.join(__dirname, 'locales'),
   defaultLocale: 'en',
   cookie: 'lang',
@@ -88,7 +90,7 @@ app.use(i18n.init);
 // ✅ Set locale from cookie on each request
 app.use((req, res, next) => {
   const lang = req.cookies.lang;
-  if (lang && ['en', 'hi', 'mr'].includes(lang)) {
+  if (lang && ['en', 'hi', 'mr', 'ml'].includes(lang)) {
     req.setLocale(lang);
   }
   res.locals.locale = req.getLocale();
@@ -104,38 +106,87 @@ app.set('views', path.join(__dirname, 'views'));
 io.on('connection', (socket) => {
   console.log('🔌 New socket connected:', socket.id);
 
+  // 🧠 Expert registers so we can target him later
+  socket.on('registerExpert', (expertId) => {
+    socketUserMap.set(expertId, socket.id);
+    console.log(`✅ Expert ${expertId} mapped to socket ${socket.id}`);
+  });
+
   socket.on('joinRoom', (roomId) => {
     socket.join(roomId);
     console.log(`Socket ${socket.id} joined room ${roomId}`);
   });
 
-  socket.on('chatMessage', ({ roomId, message, senderId }) => {
-    io.to(roomId).emit('chatMessage', { message, senderId });
+  // Farmer sends message
+socket.on("chatMessage", async ({ roomId, message, senderId, receiverId, senderType, senderName }) => {
+  console.log("📥 Received chatMessage", { roomId, message, senderId, receiverId, senderType, senderName });
+
+  // Save message to database
+  await Message.create({
+    roomId,
+    senderId,
+    receiverId,
+    content: message,
+    senderType,
+    timestamp: new Date()
   });
 
-  socket.on("endChat", (roomId) => {
-  if (activeRooms.has(roomId)) {
-    activeRooms.delete(roomId);
+  // Emit message to everyone in the room (farmer and expert)
+  io.to(roomId).emit("chatMessage", { message, senderId, senderType });
 
-    // ✅ Broadcast to everyone in the room (user + expert)
-    io.to(roomId).emit("chatEnded");
+  // Notify the expert on their dashboard
+  if (senderType === 'user') {
+    const expertSocketId = socketUserMap.get(receiverId);
+    console.log("🔎 Looking for expert socket:", receiverId, "=>", expertSocketId);
 
-    // Remove everyone from room
-    const clients = io.sockets.adapter.rooms.get(roomId);
-    if (clients) {
-      clients.forEach(socketId => {
-        io.sockets.sockets.get(socketId)?.leave(roomId);
+    if (expertSocketId) {
+      io.to(expertSocketId).emit("newMessageInDashboard", {
+        senderId,
+        message,
+        roomId,
+        senderName
       });
+      console.log("📤 Sent newMessageInDashboard to expert socket:", expertSocketId);
+    } else {
+      console.log("❌ Expert socket not found in map.");
     }
-
-    console.log(`Room ${roomId} ended by creator`);
   }
 });
 
+
+
+
+
+  socket.on("register", expertId => {
+  socketUserMap.set(expertId.toString(), socket.id); // track expert sockets
+});
+
+
+  socket.on("endChat", (roomId) => {
+    if (activeRooms.has(roomId)) {
+      activeRooms.delete(roomId);
+      io.to(roomId).emit("chatEnded");
+      const clients = io.sockets.adapter.rooms.get(roomId);
+      if (clients) {
+        clients.forEach(socketId => {
+          io.sockets.sockets.get(socketId)?.leave(roomId);
+        });
+      }
+      console.log(`Room ${roomId} ended by creator`);
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('🔌 Socket disconnected:', socket.id);
+    // Optionally remove expert from socketUserMap
+    for (const [expertId, sockId] of socketUserMap.entries()) {
+      if (sockId === socket.id) {
+        socketUserMap.delete(expertId);
+      }
+    }
   });
 });
+
 
 
 // --- Middleware ---
@@ -168,11 +219,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // --- Routes ---
 app.use('/', landingRoutes);
 app.use('/diagnosis', indexRoutes);
 app.use('/labs', labRoutes);
-app.use('/', signupRoute);
+app.use('/', onboarding);
 app.use('/history', historyRoutes);
 app.use('/chatbot', chatbotRoutes);
 app.use('/weather', weatherRoutes);
@@ -196,4 +248,3 @@ app.use((err, req, res, next) => {
 // --- Server ---
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`✅ Server + Socket.IO running on port ${PORT}`));
-
