@@ -23,6 +23,7 @@ const marketplaceRoutes = require('./routes/marketplace.js');
 const expertRoutes = require('./routes/experts.js');
 const Message = require('./models/message');
 const onboarding = require('./routes/onboarding.js');
+const profileRoutes = require('./routes/Profile.js');
 const socketUserMap = new Map();
 
 
@@ -222,6 +223,7 @@ app.use((req, res, next) => {
 
 // --- Routes ---
 app.use('/', landingRoutes);
+app.use('/', signupRoute);
 app.use('/diagnosis', indexRoutes);
 app.use('/labs', labRoutes);
 app.use('/', onboarding);
@@ -230,6 +232,7 @@ app.use('/chatbot', chatbotRoutes);
 app.use('/weather', weatherRoutes);
 app.use('/marketplace', marketplaceRoutes);
 app.use('/experts', expertRoutes);
+app.use('/', profileRoutes);
 
 
 

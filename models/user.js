@@ -7,6 +7,20 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    default: ''
+  },
+  location: {
+    type: String,
+    default: ''
+  },
+  farmDetails: [{
+    landSize: String,
+    mainCrop: String,
+    irrigationMethod: String,
+    sowingDate: Date
+  }]
 });
 
 // This adds username, hash, salt, and methods like register(), authenticate(), etc.

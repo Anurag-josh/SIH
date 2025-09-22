@@ -19,7 +19,7 @@ const { saveRedirectUrl } = require("../middleware.js");
 router.get('/signup', (req, res) => {
     res.render('signup');
 });
-router.post("/signup",async(req,res)=>{
+router.post("/signup",async(req,res,next)=>{
     try{
         let{username,email,password}=req.body;
         const newuser=new User({username,email});
@@ -29,11 +29,11 @@ router.post("/signup",async(req,res)=>{
          if(err){
             return next(err);
          }
-         req.flash("success","welcome to Ezsaty");
+         req.flash("success","welcome to GardenGenius");
         res.redirect("/");
         });
     }catch(e){
-        req.flash("fail",e.message);
+        req.flash("error",e.message);
         res.redirect("/signup");
     }
 

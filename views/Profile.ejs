@@ -50,6 +50,10 @@
     
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden"></div>
 
-    <script src="/routes/Profile.js"></script>
+    <script>
+        // Pass farmerId from server to client-side JavaScript
+        window.farmerId = '<%= farmerId %>';
+    </script>
+    <script src="/js/profile.js"></script>
 </body>
 </html>

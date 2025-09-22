@@ -12,7 +12,11 @@
     <div id="onboarding-section" class="w-full max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-lg text-center">
         <!-- Onboarding steps will be injected by onboarding.js -->
     </div>
-    <script src="onboarding.js"></script>
+    <script>
+        // Pass farmerId from server to client-side JavaScript
+        window.farmerId = '<%= farmerId %>';
+    </script>
+    <script src="/js/onboarding.js"></script>
     
 </body>
 </html>

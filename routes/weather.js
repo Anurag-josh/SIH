@@ -101,4 +101,68 @@ router.post('/', async (req, res) => {
   }
 });
 
+// API endpoint for getting current weather
+router.post('/api/get-weather', async (req, res) => {
+  try {
+    const { location } = req.body;
+    
+    if (!location) {
+      return res.status(400).json({ message: 'Location is required' });
+    }
+
+    const response = await axios.get('http://api.weatherapi.com/v1/current.json', {
+      params: {
+        key: WEATHER_API_KEY,
+        q: location,
+        aqi: 'no'
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Weather API error:', error.message);
+    res.status(500).json({ message: 'Unable to fetch weather data' });
+  }
+});
+
+// API endpoint for getting weather forecast
+router.post('/api/get-forecast', async (req, res) => {
+  try {
+    const { location } = req.body;
+    
+    if (!location) {
+      return res.status(400).json({ message: 'Location is required' });
+    }
+
+    const response = await axios.get('http://api.weatherapi.com/v1/forecast.json', {
+      params: {
+        key: WEATHER_API_KEY,
+        q: location,
+        days: 4,
+        aqi: 'no',
+        alerts: 'no'
+      }
+    });
+
+    // Format the data to match what the frontend expects
+    const forecast = response.data.forecast.forecastday.map(day => ({
+      dt: new Date(day.date).getTime() / 1000, // Convert to Unix timestamp
+      main: {
+        temp: day.day.avgtemp_c
+      },
+      weather: [{
+        main: day.day.condition.text.includes('rain') ? 'Rain' : 
+              day.day.condition.text.includes('cloud') ? 'Clouds' : 'Clear',
+        description: day.day.condition.text,
+        icon: day.day.condition.icon.replace('//cdn.weatherapi.com', '')
+      }]
+    }));
+
+    res.json(forecast);
+  } catch (error) {
+    console.error('Forecast API error:', error.message);
+    res.status(500).json({ message: 'Unable to fetch forecast data' });
+  }
+});
+
 module.exports = router;
