@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Analytics -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Agri Cultur Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Chat-specific scrollbar & tiny utilities (kept from second file) */
+        #logContainer::-webkit-scrollbar { width: 8px; }
+        #logContainer::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 10px; }
+        #logContainer::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 10px; }
+        #logContainer::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        .thinking-animation::after {
+            content: ''; display: inline-block; width: 20px; height: 20px;
+            border: 3px solid rgba(59, 130, 246, 0.3); border-radius: 50%;
+            border-top-color: #3b82f6; animation: spin 1s ease-in-out infinite; margin-left: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body class="bg-[#F0F2F5] h-screen overflow-hidden">
     <div id="app-wrapper" class="flex h-full">
@@ -26,8 +42,19 @@
                         </button>
                         <div class="relative hidden sm:block">
                             <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                            <input class="w-full bg-gray-100 rounded-lg pl-10 pr-4 py-2" placeholder="Search..." type="text"/>
+                            <input class="w-full bg-gray-100 rounded-lg pl-10 pr-4 py-2" placeholder="<%= __("Search...") %>" type="text"/>
                         </div>
+                        <!-- App Language Switcher (i18n) -->
+                        <form action="/lang" method="get" class="hidden sm:flex items-center gap-2">
+                            <label for="app-lang-select" class="text-sm text-gray-600"><%= __("Language") %></label>
+                            <select id="app-lang-select" name="lang" class="bg-gray-100 rounded-lg px-3 py-2 border border-gray-200"
+                                onchange="this.form.submit()">
+                                <option value="en" <%= (locale==='en' ? 'selected' : '') %>><%= __("English") %></option>
+                                <option value="hi" <%= (locale==='hi' ? 'selected' : '') %>><%= __("हिन्दी") %></option>
+                                <option value="mr" <%= (locale==='mr' ? 'selected' : '') %>><%= __("मराठी") %></option>
+                                <option value="ml" <%= (locale==='ml' ? 'selected' : '') %>><%= __("മലയാളം") %></option>
+                            </select>
+                        </form>
                     </div>
                     <div class="flex items-center space-x-4">
                         <img id="user-avatar" alt="User avatar" class="w-10 h-10 rounded-full" src="https://placehold.co/40x40" />
@@ -37,7 +64,7 @@
                     </div>
                 </header>
                 <div id="dashboard-content">
-                     <p class="text-center text-gray-500">Loading dashboard...</p>
+                     <p class="text-center text-gray-500"><%= __("Loading dashboard...") %></p>
                 </div>
             </main>
         </div>
@@ -47,13 +74,547 @@
     <aside id="right-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300">
         <!-- Right sidebar content will be injected by JS -->
     </aside>
-    
+
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden"></div>
 
     <script>
         // Pass farmerId from server to client-side JavaScript
         window.farmerId = '<%= farmerId %>';
+        // Expose current app locale to client
+        window.appLocale = '<%= locale %>';
+        // Minimal translation bundle for Profile UI used by profile.js
+        window.t = {
+            brand: '<%= __("agri cultur") %>',
+            dashboard: '<%= __("Dashboard") %>',
+            diagnosis: '<%= __("Diagnosis") %>',
+            labs: '<%= __("Labs") %>',
+            weather: '<%= __("Weather") %>',
+            marketplace: '<%= __("Marketplace") %>',
+            chatbot: '<%= __("Chatbot") %>',
+            logout: '<%= __("Logout") %>',
+            profile: '<%= __("Profile") %>',
+            currentFarmDetails: '<%= __("Current Farm Details") %>',
+            landSize: '<%= __("Land Size") %>',
+            mainCrop: '<%= __("Main Crop") %>',
+            irrigation: '<%= __("Irrigation") %>',
+            previousCrops: '<%= __("Previous Crops") %>',
+            noPreviousCrops: '<%= __("No previous crops logged.") %>',
+            summary: '<%= __("Summary") %>',
+            totalProduction: '<%= __("Total production") %>',
+            tons: '<%= __("Tons") %>',
+            targetProfit: '<%= __("Target Profit") %>',
+            thisSeason: '<%= __("This Season") %>',
+            loadingWeather: '<%= __("Loading today\\'s weather...") %>',
+            loadingForecast: '<%= __("Loading 4-day forecast...") %>',
+            manageYourFarm: '<%= __("Manage your farm") %>',
+            yourCropCalendarFor: '<%= __("Your Crop Calendar for") %>',
+            changeSowingDate: '<%= __("Change Sowing Date:") %>',
+            noCalendarFor: '<%= __("No crop calendar available for") %>',
+            errorWeather: '<%= __("Error loading weather data.") %>',
+            errorForecast: '<%= __("Error loading forecast data.") %>',
+            smartAssistantTitle: '<%= __("Smart Farmer Assistant") %>',
+            welcomeHelp: '<%= __("How can I help you today?") %>',
+            inputPlaceholder: '<%= __("Type or say something...") %>',
+            listening: '<%= __("Listening...") %>',
+            speechNotSupported: '<%= __("Speech recognition is not supported in this browser.") %>',
+            connectingError: '<%= __("I\'m having trouble connecting. Please check the API key and try again.") %>',
+            playAudio: '<%= __("Play Audio") %>',
+            stopAudio: '<%= __("Stop Audio") %>',
+            loadingDashboard: '<%= __("Loading dashboard...") %>',
+            searchPlaceholder: '<%= __("Search...") %>',
+            language: '<%= __("Language") %>',
+            close: '<%= __("Close") %>',
+            couldNotFetchFarmerData: '<%= __("Could not fetch farmer data") %>',
+            errorTryLoggingInAgain: '<%= __("Error: Please try logging in again.") %>',
+            failedToFetchWeather: '<%= __("Failed to fetch weather") %>',
+            failedToFetchForecast: '<%= __("Failed to fetch forecast") %>'
+        };
     </script>
     <script src="/js/profile.js"></script>
+
+    <!-- Floating Chat Button -->
+    <button id="chat-fab" class="fixed bottom-8 right-8 bg-blue-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg cursor-pointer z-50 transform hover:scale-110 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.839 8.839 0 01-4.083-.982A.5.5 0 005 16.516v-1.132a.5.5 0 00-.14-.35A6.96 6.96 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM4.416 15.544A7.001 7.001 0 0010 18c3.866 0 7-2.686 7-6s-3.134-6-7-6-7 2.686-7 6c0 1.25.483 2.422 1.309 3.382a.5.5 0 00.707-.056l.11-.11a.5.5 0 00.02-.702.5.5 0 00-.704-.02 5.002 5.002 0 01-1.285-3.003A6.002 6.002 0 0110 4c3.314 0 6 2.239 6 5s-2.686 5-6 5a6.968 6.968 0 01-3.21- .823.5.5 0 00-.623.053l-.11.11a.5.5 0 00.053.623z" clip-rule="evenodd" />
+        </svg>
+    </button>
+
+    <!-- Chat Window (bottom-right) -->
+    <div id="chat-window" class="hidden fixed bottom-8 right-8 w-full max-w-md h-[70vh] z-50">
+        <div class="flex flex-col w-full h-full bg-white rounded-2xl shadow-xl">
+            <div class="p-4 border-b text-center bg-white rounded-t-2xl flex-shrink-0 flex items-center justify-between">
+                <select id="language-select" class="w-1/3 appearance-none bg-gray-100 border-2 border-gray-200 text-gray-700 py-2 px-3 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500">
+                    <option value="en-IN">English</option>
+                    <option value="hi-IN">हिन्दी (Hindi)</option>
+                    <option value="mr-IN">मराठी (Marathi)</option>
+                    <option value="ml-IN">മലയാളം (Malayalam)</option>
+                </select>
+                <h1 class="text-xl font-bold text-gray-800"><%= __("Smart Farmer Assistant") %></h1>
+                <div class="w-1/3 text-right">
+                    <button id="close-chat-btn" class="p-2 rounded-full hover:bg-gray-200" aria-label="<%= __("Close") %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="logContainer" class="flex-grow p-6 overflow-y-auto">
+                 <div id="welcome-message" class="flex flex-col items-center justify-center h-full text-center">
+                     <div class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full mb-4 flex items-center justify-center">
+                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0117.657 18.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1014.12 11.88l-4.242 4.242z"></path></svg>
+                     </div>
+                     <h2 class="text-2xl font-bold text-gray-700"><%= __("How can I help you today?") %></h2>
+                 </div>
+            </div>
+
+            <div class="p-4 bg-white rounded-b-2xl flex-shrink-0">
+                 <div id="status" class="text-center text-gray-600 mb-2 h-6 font-medium"></div>
+                <div class="flex items-center bg-gray-100 rounded-full p-2">
+                    <input type="file" id="image-upload-input" accept="image/*" class="hidden">
+                    <button id="upload-btn" class="text-gray-500 hover:text-blue-500 p-3 transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-camera-fill" viewBox="0 0 16 16"><path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1z"/></svg>
+                    </button>
+                    <input type="text" id="text-input" placeholder="<%= __("Type or say something...") %>" class="w-full bg-transparent border-none focus:ring-0 text-gray-800 px-2" autocomplete="off">
+                    <button id="start-btn" class="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-3 transition-all duration-300 focus:outline-none ml-2">
+                        <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        // Toggle Chat Window visibility
+        const chatFab = document.getElementById('chat-fab');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChatBtn = document.getElementById('close-chat-btn');
+        chatFab.addEventListener('click', () => {
+            chatWindow.classList.remove('hidden');
+            chatFab.classList.add('hidden');
+        });
+        closeChatBtn.addEventListener('click', () => {
+            chatWindow.classList.add('hidden');
+            chatFab.classList.remove('hidden');
+        });
+    })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const startBtn = document.getElementById('start-btn');
+        const statusDiv = document.getElementById('status');
+        const logContainer = document.getElementById('logContainer');
+        const textInput = document.getElementById('text-input');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const languageSelect = document.getElementById('language-select');
+        const uploadBtn = document.getElementById('upload-btn');
+        const imageUploadInput = document.getElementById('image-upload-input');
+
+        // Sync chatbot language dropdown with app locale on load
+        try {
+            if (window.appLocale) {
+                const map = { en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN', ml: 'ml-IN' };
+                const mapped = map[window.appLocale];
+                if (mapped) languageSelect.value = mapped;
+            }
+        } catch (e) { /* noop */ }
+
+        // --- IMPORTANT: Paste your secret API keys here (these were present in your second file) ---
+        const GEMINI_API_KEY = 'AIzaSyDoHXvcdtwIRRfzRpWnHjE78MuZg9pqMWI';
+        const WEATHER_API_KEY = 'f7ab0c5af859e719711aab5796738fa1';
+        const AGMARKNET_API_KEY = '579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b';
+
+        let chatHistory = [];
+        let isListening = false;
+        let currentAudio = null;
+
+        // Speech recognition setup (graceful fallback)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.interimResults = false;
+            recognition.continuous = false;
+            recognition.onstart = () => { isListening = true; startBtn.classList.add('animate-pulse', 'bg-red-500'); statusDiv.textContent = window.t.listening || "Listening..."; };
+            recognition.onresult = (event) => { const t = event.results[0][0].transcript; textInput.value = t; processCommand(t); };
+            recognition.onend = () => { isListening = false; startBtn.classList.remove('animate-pulse', 'bg-red-500'); statusDiv.textContent = ""; };
+            recognition.onerror = (event) => { statusDiv.textContent = `Error: ${event.error}`; isListening = false; startBtn.classList.remove('animate-pulse', 'bg-red-500'); };
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (!recognition) {
+                logMessage('assistant', window.t.speechNotSupported || 'Speech recognition is not supported in this browser.');
+                return;
+            }
+            if (!isListening) { recognition.lang = languageSelect.value; recognition.start(); }
+        });
+
+        textInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && textInput.value.trim() !== "") processCommand(textInput.value.trim());
+        });
+
+        uploadBtn.addEventListener('click', () => imageUploadInput.click());
+        imageUploadInput.addEventListener('change', handleImageUpload);
+
+        window.addEventListener('beforeunload', () => { if (currentAudio) currentAudio.pause(); if (isListening && recognition) recognition.stop(); });
+
+        // ---------- Core command processing ----------
+        async function processCommand(command) {
+            if (!command || !command.trim()) return;
+            logMessage('user', command);
+            welcomeMessage.style.display = 'none';
+            textInput.value = '';
+            statusDiv.classList.add('thinking-animation');
+
+            let toolIntent = { intent: 'conversational' };
+            try { toolIntent = await getIntentForToolUse(command); } catch (e) { toolIntent = { intent: 'conversational' }; }
+
+            switch (toolIntent.intent) {
+                case 'get_weather':
+                    getWeather(toolIntent.entities?.city || 'Solapur');
+                    break;
+                case 'get_market_price':
+                    if (toolIntent.entities?.crop && toolIntent.entities?.market) {
+                        getMarketPrice(toolIntent.entities.crop, toolIntent.entities.market);
+                    } else {
+                        getConversationalResponse(command);
+                    }
+                    break;
+                case 'get_date':
+                    getDate();
+                    break;
+                case 'get_time':
+                    getTime();
+                    break;
+                default:
+                    sendMessage(command);
+                    break;
+            }
+        }
+
+        // ---------- Conversational flow using Gemini Text API ----------
+        async function getConversationalResponse(command, imageBase64 = null) {
+            try {
+                const textResponse = await getAiTextResponse(command, imageBase64);
+                const { lang, text } = textResponse;
+                const newBubble = logMessage('assistant', text);
+                statusDiv.classList.remove('thinking-animation');
+                chatHistory.push({ role: "user", parts: [{ text: command }] });
+                chatHistory.push({ role: "model", parts: [{ text }] });
+                generateAudioInBackground(text, newBubble);
+            } catch (error) {
+                console.error("Error in conversational flow:", error);
+                logMessage('assistant', window.t.connectingError || "I'm having trouble connecting. Please check the API key and try again.");
+                statusDiv.classList.remove('thinking-animation');
+            }
+        }
+
+        async function getAiTextResponse(command, imageBase64 = null) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+            const systemInstruction = {
+                role: "system",
+                parts: [{ text: `You are "Krishi Sahayak," a multilingual AI assistant. 
+- Your default response language is ALWAYS English (en-IN).
+- Only switch to another language (Hindi, Marathi, Malayalam) if the user's LATEST query is an explicit translation command.
+- Your entire output MUST be a single JSON object with "lang" (e.g., "en-IN", "hi-IN") and "text" keys.` }]
+            };
+            const userParts = [{ text: command }];
+            if (imageBase64) {
+                // Gemini inline image data expects raw base64 (without data: prefix in your previous code)
+                userParts.push({ inline_data: { mime_type: "image/jpeg", data: imageBase64 } });
+            }
+            const payload = { contents: [...chatHistory, { role: "user", parts: userParts }], systemInstruction };
+
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error("Failed to get text response from AI.");
+            const result = await response.json();
+            // the API candidates[0].content.parts[0].text should contain JSON as text
+            const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!rawText) throw new Error("No text returned from AI.");
+            // sanitize triple backticks if present and parse
+            const sanitized = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            return JSON.parse(sanitized);
+        }
+
+        // ---------- Audio (TTS) generation ----------
+        async function generateAudioInBackground(text, bubbleElement) {
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${GEMINI_API_KEY}`;
+                const payload = {
+                    contents: [{ parts: [{ text }] }],
+                    generationConfig: { responseModalities: ["AUDIO"] },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error("Failed to generate audio.");
+                const result = await response.json();
+                const audioData = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+                const mimeType = result?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.mimeType;
+                if (audioData && mimeType) {
+                    // try to extract sample rate from mimeType if present like "audio/raw;rate=16000"
+                    let sampleRate = 16000;
+                    const match = mimeType.match(/rate=(\d+)/);
+                    if (match) sampleRate = parseInt(match[1], 10);
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    // create Int16 view
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+
+                    // Audio control button
+                    const audioControlBtn = document.createElement('button');
+                    const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-play-fill mr-2" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg> ${window.t.playAudio || 'Play Audio'}`;
+                    const stopIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-stop-fill mr-2" viewBox="0 0 16 16"><path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5z"/></svg> ${window.t.stopAudio || 'Stop Audio'}`;
+
+                    audioControlBtn.innerHTML = playIcon;
+                    audioControlBtn.className = "mt-3 flex items-center justify-center w-full py-2 px-4 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700";
+                    audioControlBtn.setAttribute('aria-label', 'Play assistant audio');
+                    bubbleElement.appendChild(audioControlBtn);
+
+                    function playWavBlob() {
+                        if (currentAudio) currentAudio.pause();
+                        const audioUrl = URL.createObjectURL(wavBlob);
+                        currentAudio = new Audio(audioUrl);
+                        currentAudio.play();
+                        audioControlBtn.innerHTML = stopIcon;
+                        audioControlBtn.classList.replace('bg-green-600', 'bg-red-600');
+                        audioControlBtn.classList.replace('hover:bg-green-700', 'hover:bg-red-700');
+                        audioControlBtn.setAttribute('aria-label', 'Stop assistant audio');
+                        currentAudio.onended = () => {
+                            audioControlBtn.innerHTML = playIcon;
+                            audioControlBtn.classList.replace('bg-red-600', 'bg-green-600');
+                            audioControlBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                            audioControlBtn.setAttribute('aria-label', 'Play assistant audio');
+                        };
+                    }
+
+                    // Auto-play high-quality TTS as soon as it's ready
+                    playWavBlob();
+
+                    audioControlBtn.onclick = () => {
+                        if (currentAudio && !currentAudio.paused) {
+                            currentAudio.pause();
+                            audioControlBtn.innerHTML = playIcon;
+                            audioControlBtn.classList.replace('bg-red-600', 'bg-green-600');
+                            audioControlBtn.classList.replace('hover:bg-red-700', 'hover:bg-green-700');
+                            audioControlBtn.setAttribute('aria-label', 'Play assistant audio');
+                        } else {
+                            playWavBlob();
+                        }
+                    };
+                }
+            } catch (error) {
+                console.error("Audio generation failed:", error);
+            }
+        }
+
+        // ---------- Backend-driven chat + TTS (file-chat + speak) ----------
+        async function createAudioControls(replyText, langCode) {
+            const audioContainer = document.createElement('div');
+            audioContainer.className = 'flex gap-2 mt-2';
+
+            const playBtn = document.createElement('button');
+            playBtn.className = 'bg-purple-600 text-white px-3 py-1 rounded';
+            playBtn.textContent = 'Play';
+
+            const pauseBtn = document.createElement('button');
+            pauseBtn.className = 'bg-red-600 text-white px-3 py-1 rounded';
+            pauseBtn.textContent = 'Pause';
+
+            let audio = null;
+
+            async function loadAudio() {
+                if (!replyText) return;
+                try {
+                    const response = await fetch('http://localhost:5001/speak', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: replyText, lang: langCode })
+                    });
+                    if (!response.ok) {
+                        console.error('TTS error:', response.statusText);
+                        return;
+                    }
+                    const blob = await response.blob();
+                    const audioUrl = URL.createObjectURL(blob);
+                    audio = new Audio(audioUrl);
+                    audio.play();
+                } catch (err) {
+                    console.error('Error in speakText:', err);
+                }
+            }
+
+            playBtn.addEventListener('click', () => { if (audio) audio.play(); });
+            pauseBtn.addEventListener('click', () => { if (audio) audio.pause(); });
+
+            audioContainer.appendChild(playBtn);
+            audioContainer.appendChild(pauseBtn);
+
+            await loadAudio();
+            return audioContainer;
+        }
+
+        async function sendMessage(inputText) {
+            if (!inputText) return;
+            const langCode = (languageSelect.value || 'en').split('-')[0];
+
+            statusDiv.classList.add('thinking-animation');
+
+            try {
+                const res = await fetch('http://localhost:5001/file-chat', {
+                    method: 'POST',
+                    body: new URLSearchParams({ prompt: inputText, language: langCode })
+                });
+                const data = await res.json();
+                const replyText = data.reply || 'Sorry, I could not generate a reply.';
+
+                // Assistant bubble
+                const bubble = logMessage('assistant', replyText);
+                statusDiv.classList.remove('thinking-animation');
+
+                // Add Play/Pause controls
+                try {
+                    const controls = await createAudioControls(replyText, langCode);
+                    bubble.appendChild(controls);
+                } catch (e) {
+                    console.error('Failed to attach audio controls:', e);
+                }
+            } catch (err) {
+                console.error('Error sending message:', err);
+                statusDiv.classList.remove('thinking-animation');
+                logMessage('assistant', 'There was an error connecting to the assistant service.');
+            }
+        }
+
+        // ---------- Utility runTool, date & time ----------
+        function runTool(text) {
+            const newBubble = logMessage('assistant', text);
+            generateAudioInBackground(text, newBubble);
+            statusDiv.classList.remove('thinking-animation');
+        }
+        function getDate() { runTool(`Today is ${new Date().toLocaleDateString(languageSelect.value, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`); }
+        function getTime() { runTool(`The current time is ${new Date().toLocaleTimeString(languageSelect.value.split('-')[0], { hour: '2-digit', minute: '2-digit', hour12: true })}.`); }
+
+        // ---------- Weather & Market APIs ----------
+        async function getWeather(city) {
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${WEATHER_API_KEY}&units=metric`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                let text = (data.cod === 200) ? `The weather in ${city} is currently ${data.weather[0].description} with a temperature of ${Math.round(data.main.temp)}°C.` : `Sorry, I could not find the weather for ${city}.`;
+                runTool(text);
+            } catch (error) { runTool("Sorry, I couldn't connect to the weather service."); }
+        }
+
+        async function getMarketPrice(crop, market) {
+            const url = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${AGMARKNET_API_KEY}&format=json&limit=5&filters[market]=${encodeURIComponent(market)}&filters[commodity]=${encodeURIComponent(crop)}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                let text = (data.records && data.records.length > 0) ? `As of today, the modal price for ${crop} in the ${market} market is ${data.records[0].modal_price} rupees per quintal.` : `Sorry, I couldn't find the price for ${crop} in the ${market} market. Please check the name.`;
+                runTool(text);
+            } catch (error) { runTool("Sorry, I couldn't connect to the market price service."); }
+        }
+
+        // ---------- Intent router using Gemini ----------
+        async function getIntentForToolUse(command) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+            const systemPrompt = `You are an expert intent router. You have four tools: "get_weather", "get_market_price", "get_date", and "get_time". For ALL other commands, including translation requests, respond with: {"intent": "conversational"}. Respond ONLY with the JSON object.`;
+            const payload = { contents: [{ parts: [{ text: `${systemPrompt}\nUser command: ${command}` }] }] };
+            try {
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) return { intent: 'conversational' };
+                const result = await response.json();
+                const raw = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!raw) return { intent: 'conversational' };
+                const sanitized = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+                return JSON.parse(sanitized);
+            } catch (error) {
+                return { intent: 'conversational' };
+            }
+        }
+
+        // ---------- Image handling ----------
+        function handleImageUpload(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const dataUrl = reader.result;
+                logMessage('user', 'What is wrong with this plant?', dataUrl);
+                // send just base64 payload (strip prefix) to Gemini image field in getConversationalResponse
+                const base64 = dataUrl.split(',')[1];
+                getConversationalResponse('Analyze this image of a plant. Identify any disease or pest. Provide a simple diagnosis and suggest practical control measures for a farmer in India.', base64);
+            };
+            reader.readAsDataURL(file);
+            welcomeMessage.style.display = 'none';
+            statusDiv.classList.add('thinking-animation');
+        }
+
+        // ---------- DOM logging ----------
+        function logMessage(sender, message, imageUrl = null) {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('flex', 'w-full', 'mb-4', 'animate-fade-in');
+            const bubble = document.createElement('div');
+            bubble.classList.add('px-4', 'py-3', 'rounded-2xl', 'max-w-[85%]', 'md:max-w-[75%]', 'leading-relaxed', 'shadow');
+            if (sender === 'user') {
+                wrapper.classList.add('justify-end');
+                bubble.classList.add('bg-blue-500', 'text-white', 'rounded-br-lg');
+                if (imageUrl) {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.classList.add('rounded-lg', 'max-w-xs', 'mb-2');
+                    bubble.appendChild(img);
+                }
+                bubble.appendChild(document.createTextNode(message));
+            } else {
+                wrapper.classList.add('justify-start');
+                bubble.classList.add('bg-gray-200', 'text-gray-800', 'rounded-bl-lg');
+                // allow **bold** formatting
+                message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                bubble.innerHTML = message.replace(/\n/g, '<br>');
+            }
+            wrapper.appendChild(bubble);
+            logContainer.appendChild(wrapper);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            return bubble;
+        }
+
+        // ---------- Helpers for audio conversion ----------
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) { bytes[i] = binaryString.charCodeAt(i); }
+            return bytes.buffer;
+        }
+        function pcmToWav(pcmData, sampleRate) {
+            const view = new DataView(new ArrayBuffer(44 + pcmData.length * 2));
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcmData.length * 2, true);
+            writeString(view, 8, 'WAVEfmt ');
+            view.setUint32(16, 16, true); view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true); writeString(view, 36, 'data');
+            view.setUint32(40, pcmData.length * 2, true);
+            for (let i = 0; i < pcmData.length; i++) {
+                view.setInt16(44 + i * 2, pcmData[i], true);
+            }
+            return new Blob([view], { type: 'audio/wav' });
+        }
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // Small welcome message pre-population if needed
+        // Example: show farmerId if present
+        if (window.farmerId) {
+            const inf = `Farmer ID: ${window.farmerId}`;
+            // we won't auto-log — but you can use this in the UI as needed
+            console.log(inf);
+        }
+    });
+    </script>
 </body>
 </html>

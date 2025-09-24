@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= __('GardenGenius') %></title>
+  <title>Krishi Sakhi</title>
 
   <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
   <link rel="stylesheet" href="styles.css" />
@@ -78,11 +78,21 @@
               </svg>
             </a>
           </div>
-          <h2 class="text-lg font-bold tracking-tight animate-fade-in"><%= __('GardenGenius') %></h2>
+          <h2 class="text-lg font-bold tracking-tight animate-fade-in">Krishi Sakhi</h2>
         </div>
         <div class="flex flex-1 justify-end gap-9">
           <a class="text-sm font-medium animate-fade-in delay-100" href="#"><%= __('Plants') %></a>
           <a class="text-sm font-medium animate-fade-in delay-200" href="#"><%= __('Soil') %></a>
+          <form action="/lang" method="get" class="flex items-center gap-2 animate-fade-in delay-300">
+            <label for="lang" class="text-sm font-medium text-[#0e1b0e] hidden md:block"><%= __('Language') %>:</label>
+            <select id="lang" name="lang" class="text-sm border border-[#d0e7d1] rounded px-2 py-1"
+              onchange="this.form.submit()">
+              <option value="en" <%= (locale==='en' ? 'selected' : '') %>>English</option>
+              <option value="hi" <%= (locale==='hi' ? 'selected' : '') %>>हिन्दी</option>
+              <option value="mr" <%= (locale==='mr' ? 'selected' : '') %>>मराठी</option>
+              <option value="ml" <%= (locale==='ml' ? 'selected' : '') %>>മലയാളം</option>
+            </select>
+          </form>
         </div>
       </header>
 

@@ -98,6 +98,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// --- Language switcher endpoint ---
+app.get('/lang', (req, res) => {
+  const { lang } = req.query;
+  const supported = ['en', 'hi', 'mr', 'ml'];
+  if (supported.includes(lang)) {
+    res.cookie('lang', lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: false });
+  }
+  const back = req.get('Referer') || '/';
+  res.redirect(back);
+});
+
 // --- View Engine ---
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

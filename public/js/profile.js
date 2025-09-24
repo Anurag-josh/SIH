@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/api/farmer-data/${farmerId}`);
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Could not fetch farmer data');
+                throw new Error(errorData.message || (window.t && window.t.couldNotFetchFarmerData) || 'Could not fetch farmer data');
             }
             farmerData = await response.json();
 
@@ -31,12 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             populateDashboard();
 
-            const latestFarmDetails = farmerData.farmDetails[farmerData.farmDetails.length - 1];
-            if (latestFarmDetails && latestFarmDetails.mainCrop) {
-                // Fetch calendar data first so it's available for alert checks
-                await fetchAndSetCalendar(latestFarmDetails.mainCrop);
-                fetchAndRenderCalendar(latestFarmDetails.mainCrop, latestFarmDetails.sowingDate);
-            }
+            // Crop calendar is rendered by the new calendar widget in renderMainContent()
             
             if (farmerData.location) {
                 // Fetching weather and forecast data and then checking for alerts
@@ -44,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 await fetchAndRenderForecast(farmerData.location);
             }
         } catch (error) {
-            dashboardContent.innerHTML = `<p class="text-red-500 font-semibold">Error: ${error.message}. Please try logging in again.</p>`;
+            dashboardContent.innerHTML = `<p class="text-red-500 font-semibold">${(window.t && window.t.errorTryLoggingInAgain) || 'Error: Please try logging in again.'}</p>`;
         }
     }
 
@@ -57,19 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderLeftSidebar() {
         leftSidebar.innerHTML = `
-            <div class="text-2xl font-bold mb-10 px-2">agri cultur</div>
+            <div class="text-2xl font-bold mb-10 px-2">Krishi Sakhi</div>
             <nav class="flex-grow">
                 <ul>
-                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors bg-[#D4EDDA] text-[#155724] border-l-4 border-[#28A745]"><span class="material-icons mr-3">dashboard</span>Dashboard</a></li>
-                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">analytics</span>Analytics</a></li>
-                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">grass</span>Fields</a></li>
-                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">agriculture</span>Harvesting</a></li>
-                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">account_balance_wallet</span>Finances</a></li>
-                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">wb_sunny</span>Weather</a></li>
-                    <li><a href="#" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">settings</span>Settings</a></li>
+                    <li class="mb-2"><a href="#" class="flex items-center p-3 rounded-lg transition-colors bg-[#D4EDDA] text-[#155724] border-l-4 border-[#28A745]"><span class="material-icons mr-3">dashboard</span>${(window.t && window.t.dashboard) || 'Dashboard'}</a></li>
+                    <li class="mb-2"><a href="/diagnosis" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">analytics</span>${(window.t && window.t.diagnosis) || 'Diagnosis'}</a></li>
+                    <li class="mb-2"><a href="/labs" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">grass</span>${(window.t && window.t.labs) || 'Labs'}</a></li>
+                    <li class="mb-2"><a href="/weather" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span <span class="material-icons mr-3">wb_sunny</span>${(window.t && window.t.weather) || 'Weather'}</a></li>
+                    <li class="mb-2"><a href="/marketplace" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">account_balance_wallet</span>${(window.t && window.t.marketplace) || 'Marketplace'}</a></li>
+                    <li><a href="/chatbot" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">settings</span>${(window.t && window.t.chatbot) || 'Chatbot'}</a></li>
                 </ul>
             </nav>
-            <div><a href="/" id="logout-btn" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">logout</span>Logout</a></div>
+            <div><a href="/" id="logout-btn" class="flex items-center p-3 rounded-lg transition-colors hover:bg-gray-700"><span class="material-icons mr-3">logout</span>${(window.t && window.t.logout) || 'Logout'}</a></div>
         `;
         document.getElementById('logout-btn').addEventListener('click', () => {
             window.location.href = '/logout';
@@ -81,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rightSidebar.innerHTML = `
             <div class="p-6 flex flex-col h-full">
                 <div class="flex justify-between items-center mb-8">
-                    <h3 class="font-bold text-xl">Profile</h3>
+                    <h3 class="font-bold text-xl">${(window.t && window.t.profile) || 'Profile'}</h3>
                     <button id="close-profile-btn" class="text-gray-500"><span class="material-icons">close</span></button>
                 </div>
                 <div class="flex flex-col items-center text-center border-b pb-6">
@@ -90,17 +84,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="text-sm text-gray-500">${farmerData.location}</p>
                 </div>
                 <div class="mt-8">
-                    <h3 class="font-bold text-xl mb-4">Current Farm Details</h3>
+                    <h3 class="font-bold text-xl mb-4">${(window.t && window.t.currentFarmDetails) || 'Current Farm Details'}</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><strong>Land Size:</strong> ${latestFarmDetails.landSize || 'N/A'}</li>
-                        <li><strong>Main Crop:</strong> ${latestFarmDetails.mainCrop || 'N/A'}</li>
-                        <li><strong>Irrigation:</strong> ${latestFarmDetails.irrigationMethod || 'N/A'}</li>
+                        <li><strong>${(window.t && window.t.landSize) || 'Land Size'}:</strong> ${latestFarmDetails.landSize || 'N/A'}</li>
+                        <li><strong>${(window.t && window.t.mainCrop) || 'Main Crop'}:</strong> ${latestFarmDetails.mainCrop || 'N/A'}</li>
+                        <li><strong>${(window.t && window.t.irrigation) || 'Irrigation'}:</strong> ${latestFarmDetails.irrigationMethod || 'N/A'}</li>
                     </ul>
                 </div>
                 <div class="mt-4 flex-grow overflow-y-auto">
-                    <h3 class="font-bold text-lg mb-2">Previous Crops</h3>
+                    <h3 class="font-bold text-lg mb-2">${(window.t && window.t.previousCrops) || 'Previous Crops'}</h3>
                     <ul class="space-y-1 text-sm text-gray-600">
-                        ${farmerData.farmDetails.slice(0, -1).map(fd => `<li>- ${fd.mainCrop}</li>`).join('') || '<li>No previous crops logged.</li>'}
+                        ${farmerData.farmDetails.slice(0, -1).map(fd => `<li>- ${fd.mainCrop}</li>`).join('') || `<li>${(window.t && window.t.noPreviousCrops) || 'No previous crops logged.'}</li>`}
                     </ul>
                 </div>
             </div>
@@ -113,203 +107,192 @@ document.addEventListener('DOMContentLoaded', () => {
         dashboardContent.innerHTML = `
             <div id="alert-container" class="mb-4"></div>
             <section>
-                <h2 class="text-xl font-semibold mb-4">Summary</h2>
+                <h2 class="text-xl font-semibold mb-4">${(window.t && window.t.summary) || 'Summary'}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="bg-gray-50 p-6 rounded-2xl">
-                        <div><p class="text-gray-500">${latestFarmDetails.mainCrop || 'Main Crop'}</p><p class="text-sm text-gray-400">Total production</p></div>
-                        <p class="text-3xl font-bold mt-2">125 <span class="text-lg font-medium">Tons</span></p>
+                        <div><p class="text-gray-500">${latestFarmDetails.mainCrop || ((window.t && window.t.mainCrop) || 'Main Crop')}</p><p class="text-sm text-gray-400">${(window.t && window.t.totalProduction) || 'Total production'}</p></div>
+                        <p class="text-3xl font-bold mt-2">125 <span class="text-lg font-medium">${(window.t && window.t.tons) || 'Tons'}</span></p>
                     </div>
                     <div class="bg-gray-50 p-6 rounded-2xl">
-                        <div><p class="text-gray-500">Target Profit</p><p class="text-sm text-gray-400">This Season</p></div>
+                        <div><p class="text-gray-500">${(window.t && window.t.targetProfit) || 'Target Profit'}</p><p class="text-sm text-gray-400">${(window.t && window.t.thisSeason) || 'This Season'}</p></div>
                         <p class="text-3xl font-bold mt-2">$25,000</p>
                     </div>
                     <div class="col-span-1 md:col-span-2 bg-gray-50 p-6 rounded-2xl" id="weather-container">
-                        <p class="text-gray-500">Loading today's weather...</p>
+                        <p class="text-gray-500">${(window.t && window.t.loadingWeather) || "Loading today's weather..."}</p>
                     </div>
                 </div>
             </section>
             <section class="mt-8">
-                <h2 class="text-xl font-semibold mb-4">Manage your farm</h2>
+                <h2 class="text-xl font-semibold mb-4">${(window.t && window.t.manageYourFarm) || 'Manage your farm'}</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 rounded-2xl overflow-hidden h-64 lg:h-auto"><img alt="Cornfield" class="w-full h-full object-cover" src="https://images.pexels.com/photos/18720483/pexels-photo-18720483.jpeg"/></div>
                     <div class="grid grid-cols-2 gap-4" id="forecast-container">
-                        <p class="col-span-2 text-gray-500 text-center">Loading 4-day forecast...</p>
+                        <p class="col-span-2 text-gray-500 text-center">${(window.t && window.t.loadingForecast) || 'Loading 4-day forecast...'}</p>
                     </div>
                 </div>
             </section>
             <section id="calendar-container" class="mt-8"></section>
         `;
+        renderNewCalendarShell();
     }
     
-    // NEW FUNCTION: Fetches the crop calendar and stores it in farmerData
-    async function fetchAndSetCalendar(cropName) {
-        try {
-            const calendarResponse = await fetch(`/api/crop-calendar/${cropName}`);
-            if (!calendarResponse.ok) throw new Error('Calendar not found');
-            const calendarData = await calendarResponse.json();
-            farmerData.cropCalendar = calendarData;
-        } catch (error) {
-            console.error('Error fetching calendar data for alerts:', error);
-            farmerData.cropCalendar = null;
-        }
-    }
-
-    async function fetchAndRenderCalendar(cropName, sowingDate) {
-        try {
-            const calendarResponse = await fetch(`/api/crop-calendar/${cropName}`);
-            if (!calendarResponse.ok) throw new Error('Calendar not found');
-            const calendarData = await calendarResponse.json();
-            renderCropCalendar(calendarData.activities, new Date(sowingDate));
-        } catch (error) {
-            const calendarContainer = document.getElementById('calendar-container');
-            if (calendarContainer) {
-                calendarContainer.innerHTML = `<p class="p-4 bg-yellow-100 text-yellow-800 rounded-lg">No crop calendar available for ${cropName}.</p>`;
-            }
-        }
-    }
-    
-    function renderCropCalendar(activities, initialSowingDate) {
-        const calendarContainer = document.getElementById('calendar-container');
-        if (!calendarContainer) return;
-
-        let calendarHTML = `
-            <div class="bg-white p-6 rounded-2xl shadow-lg">
-                <h3 class="text-xl font-semibold mb-4">Your Crop Calendar for ${farmerData.farmDetails[farmerData.farmDetails.length - 1].mainCrop}</h3>
-                <div class="mb-4">
-                    <label for="sowing-date" class="block text-sm font-medium text-gray-700">Change Sowing Date:</label>
-                    <input type="date" id="sowing-date" class="mt-1 block w-full md:w-1/3 p-2 border border-gray-300 rounded-md shadow-sm">
+    // Replace old calendar with new calendar UI and logic (calendar-container)
+    function renderNewCalendarShell() {
+        const container = document.getElementById('calendar-container');
+        if (!container) return;
+        container.innerHTML = `
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="flex items-center gap-4 mb-5">
+                    <div class="bg-green-100 p-3 rounded-full"><span class="material-icons text-green-600">event</span></div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Create Your Schedule</h3>
+                        <p class="text-sm text-gray-500">Get a personalized farm calendar in seconds.</p>
+                    </div>
                 </div>
-                <div id="calendar-activities" class="space-y-4"></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="cc-crop-select" class="block text-sm font-medium text-gray-700 mb-2">1. Select Your Crop</label>
+                        <select id="cc-crop-select" class="w-full p-3 text-base border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500">
+                            <option>Loading crops...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cc-sowing-date" class="block text-sm font-medium text-gray-700 mb-2">2. Enter Sowing Date</label>
+                        <input type="date" id="cc-sowing-date" class="w-full p-3 text-base border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div class="self-end">
+                        <button id="cc-generate-btn" class="w-full flex items-center justify-center bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition">
+                            <svg id="cc-loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <span id="cc-button-text">Generate Schedule</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cc-task-list-card" class="bg-white rounded-2xl shadow-lg p-6 hidden mt-6">
+                <h4 class="text-xl font-bold text-gray-800 mb-4">Your Step-by-Step Schedule</h4>
+                <div id="cc-task-list-body" class="space-y-4"></div>
+            </div>
+
+            <div id="cc-calendar-card" class="bg-white rounded-2xl shadow-lg p-4 sm:p-6 hidden mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h5 id="cc-month-year-display" class="text-xl font-bold text-gray-800"></h5>
+                    <div class="flex items-center gap-2">
+                        <button id="cc-today-btn" class="text-sm font-medium text-gray-600 hover:text-green-600 px-3 py-1.5 rounded-md hover:bg-gray-100">Today</button>
+                        <button id="cc-prev-month-btn" class="p-2 rounded-full hover:bg-gray-100"><span class="material-icons text-gray-500">chevron_left</span></button>
+                        <button id="cc-next-month-btn" class="p-2 rounded-full hover:bg-gray-100"><span class="material-icons text-gray-500">chevron_right</span></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center text-sm font-semibold text-gray-400 mb-2">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="cc-calendar-body" class="grid grid-cols-7 gap-1"></div>
+            </div>
+            
+            <div id="cc-placeholder-card" class="text-center py-16 px-6 bg-white rounded-2xl shadow-lg border-2 border-dashed border-gray-200 mt-6">
+                <span class="material-icons mx-auto block text-gray-400">calendar_today</span>
+                <h6 class="mt-2 text-lg font-medium text-gray-900">Your schedule will appear here</h6>
+                <p class="mt-1 text-sm text-gray-500">Select a crop and date above to get started.</p>
+            </div>
+
+            <div id="cc-day-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+                <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="cc-modal-date" class="text-xl font-bold text-gray-800"></h3>
+                        <button id="cc-close-modal-btn" class="p-2 rounded-full hover:bg-gray-200"><span class="material-icons text-gray-600">close</span></button>
+                    </div>
+                    <div id="cc-modal-event-list" class="space-y-2 mb-6"></div>
+                    <div class="border-t pt-4">
+                        <h4 class="text-lg font-semibold text-gray-700 mb-2">Add a New Task or Note</h4>
+                        <form id="cc-add-event-form">
+                            <input type="hidden" id="cc-event-date-input">
+                            <input id="cc-event-title-input" type="text" placeholder="e.g., Bought seeds" class="w-full p-2 border border-gray-300 rounded-md mb-2" required>
+                            <select id="cc-event-type-select" class="w-full p-2 border border-gray-300 rounded-md mb-4">
+                                <option value="Note">Note</option>
+                                <option value="Fertilizer">Fertilizer</option>
+                                <option value="Irrigation">Irrigation</option>
+                                <option value="Pest Control">Pest Control</option>
+                                <option value="Weeding">Weeding</option>
+                                <option value="Harvesting">Harvesting</option>
+                            </select>
+                            <button type="submit" class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition">Add Event</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         `;
-        calendarContainer.innerHTML = calendarHTML;
-        
-        const dateInput = document.getElementById('sowing-date');
-        const activitiesContainer = document.getElementById('calendar-activities');
-
-        function updateCalendarView(currentSowingDate) {
-            let activitiesHTML = '';
-            activities.forEach(activity => {
-                const startDate = new Date(currentSowingDate);
-                startDate.setDate(startDate.getDate() + activity.start_day);
-
-                const endDate = new Date(currentSowingDate);
-                endDate.setDate(endDate.getDate() + activity.end_day);
-
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                startDate.setHours(0, 0, 0, 0);
-                endDate.setHours(0, 0, 0, 0);
-                
-                const isActive = today >= startDate && today <= endDate;
-
-                activitiesHTML += `
-                    <div class="p-4 rounded-lg ${isActive ? 'bg-green-100 border-l-4 border-green-500' : 'bg-gray-50'}">
-                        <div class="flex justify-between items-center">
-                            <p class="font-bold">${activity.stage}</p>
-                            <p class="text-sm text-gray-600">${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}</p>
-                        </div>
-                        <p class="mt-2 text-sm">${activity.description}</p>
-                        <p class="mt-1 text-sm font-semibold text-red-600">${activity.critical_info || ''}</p>
-                    </div>
-                `;
-            });
-            activitiesContainer.innerHTML = activitiesHTML;
-        }
-
-        dateInput.valueAsDate = initialSowingDate;
-        updateCalendarView(initialSowingDate);
-        
-        dateInput.addEventListener('change', (e) => {
-            if (e.target.value) {
-                updateCalendarView(new Date(e.target.value));
-            }
-        });
+        initCropCalendarWidget();
     }
 
-    // --- NEW Function to Fetch and Render Today's Weather ---
+    // --- Render Today's Weather from static data (no API) ---
     async function fetchAndRenderTodayWeather(location) {
         const weatherContainer = document.getElementById('weather-container');
         if (!weatherContainer) return;
 
-        weatherContainer.innerHTML = '<p class="text-gray-500">Loading today\'s weather...</p>';
+        weatherContainer.innerHTML = `<p class="text-gray-500">${(window.t && window.t.loadingWeather) || "Loading today's weather..."}</p>`;
 
-        try {
-            const response = await fetch('/api/get-weather', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ location }) 
-            });
-            if (!response.ok) throw new Error('Failed to fetch weather');
+        // Static sample weather data (customize as needed)
+        const weatherData = {
+            main: { temp: 29.6 },
+            weather: [{ main: 'Clouds', description: 'scattered clouds', icon: '03d' }]
+        };
 
-            const weatherData = await response.json();
-            
-            const temp = Math.round(weatherData.main.temp);
-            const description = weatherData.weather[0].description;
-            const iconUrl = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
-            
-            const weatherHtml = `
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-lg font-semibold">${farmerData.location}</p>
-                        <p class="text-sm text-gray-600">${description}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-4xl font-bold">${temp}°C</p>
-                        <img src="${iconUrl}" alt="${description}" class="w-16 h-16 inline-block"/>
-                    </div>
+        const temp = Math.round(weatherData.main.temp);
+        const description = weatherData.weather[0].description;
+        const iconUrl = `http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`;
+
+        const weatherHtml = `
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-lg font-semibold">${farmerData.location}</p>
+                    <p class="text-sm text-gray-600">${description}</p>
                 </div>
-            `;
-            weatherContainer.innerHTML = weatherHtml;
-
-        } catch (error) {
-            console.error("Weather fetch error:", error);
-            weatherContainer.innerHTML = `<p class="text-red-500">Error loading weather data.</p>`;
-        }
+                <div class="text-right">
+                    <p class="text-4xl font-bold">${temp}°C</p>
+                    <img src="${iconUrl}" alt="${description}" class="w-16 h-16 inline-block"/>
+                </div>
+            </div>
+        `;
+        weatherContainer.innerHTML = weatherHtml;
     }
     
-    // --- NEW Function to Fetch and Render 4-Day Forecast ---
+    // --- Render 4-Day Forecast from static data (no API) ---
     async function fetchAndRenderForecast(location) {
         const forecastContainer = document.getElementById('forecast-container');
         if (!forecastContainer) return;
 
-        forecastContainer.innerHTML = '<p class="col-span-2 text-gray-500 text-center">Loading 4-day forecast...</p>';
+        forecastContainer.innerHTML = `<p class="col-span-2 text-gray-500 text-center">${(window.t && window.t.loadingForecast) || "Loading 4-day forecast..."}</p>`;
 
-        try {
-            const response = await fetch('/api/get-forecast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ location })
-            });
-            if (!response.ok) throw new Error('Failed to fetch forecast');
+        // Static 4-day forecast sample (timestamps are today + n days)
+        const now = Date.now();
+        const dayMs = 24 * 60 * 60 * 1000;
+        const forecastData = [
+            { dt: Math.floor((now + 1 * dayMs) / 1000), main: { temp: 30 }, weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }] },
+            { dt: Math.floor((now + 2 * dayMs) / 1000), main: { temp: 28 }, weather: [{ main: 'Clouds', description: 'few clouds', icon: '02d' }] },
+            { dt: Math.floor((now + 3 * dayMs) / 1000), main: { temp: 27 }, weather: [{ main: 'Rain', description: 'light rain', icon: '10d' }] },
+            { dt: Math.floor((now + 4 * dayMs) / 1000), main: { temp: 31 }, weather: [{ main: 'Clear', description: 'sunny', icon: '01d' }] }
+        ];
 
-            const forecastData = await response.json();
-            
-            // Call the new alert function with the fetched data
-            checkAndRenderAlerts(forecastData, farmerData);
+        // Use forecast for alerts
+        checkAndRenderAlerts(forecastData, farmerData);
 
-            let forecastHtml = '';
-            forecastData.forEach(day => {
-                const date = new Date(day.dt * 1000).toLocaleDateString();
-                const temp = Math.round(day.main.temp);
-                const description = day.weather[0].description;
-                const iconUrl = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+        let forecastHtml = '';
+        forecastData.forEach(day => {
+            const date = new Date(day.dt * 1000).toLocaleDateString();
+            const temp = Math.round(day.main.temp);
+            const description = day.weather[0].description;
+            const iconUrl = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
 
-                forecastHtml += `
-                    <div class="bg-gray-50 p-4 rounded-2xl text-center">
-                        <p>${date}</p>
-                        <img src="${iconUrl}" alt="${description}" class="w-12 h-12 mx-auto"/>
-                        <p class="text-3xl font-bold">${temp}°</p>
-                        <p>${description}</p>
-                    </div>
-                `;
-            });
-            forecastContainer.innerHTML = forecastHtml;
-
-        } catch (error) {
-            console.error("Forecast fetch error:", error);
-            forecastContainer.innerHTML = `<p class="col-span-2 text-red-500 text-center">Error loading forecast data.</p>`;
-        }
+            forecastHtml += `
+                <div class="bg-gray-50 p-4 rounded-2xl text-center">
+                    <p>${date}</p>
+                    <img src="${iconUrl}" alt="${description}" class="w-12 h-12 mx-auto"/>
+                    <p class="text-3xl font-bold">${temp}°</p>
+                    <p>${description}</p>
+                </div>
+            `;
+        });
+        forecastContainer.innerHTML = forecastHtml;
     }
 
     // NEW FUNCTION: The core logic to check for weather-related alerts
